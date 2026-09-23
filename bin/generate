@@ -24,10 +24,14 @@ bin/merge-specs "$MERGED" \
   organization="$ORG" \
   application="$APP"
 
-# The three collections that become resources. Every other path in these
-# documents is a sub-resource, a check-name probe or a share operation, and a
-# resource generated from one would be a resource nothing can own.
-RESOURCES='/tenants;/organizations;/applications'
+# NO FILTER. The document describes the whole API and openapi-generator writes
+# whatever it is given; generating less than that took EXTRA code to arrange,
+# and every path left out is a thing nobody can manage.
+
+# Everything under internal/ is generated, and a rename leaves the old file
+# behind -- stale resources from an earlier run compile just as well as the new
+# ones, which is how `tenant` and `tenants` both ended up in the provider.
+rm -rf internal/provider internal/client
 
 openapi-generator-wso2 generate \
   -i "$MERGED" \
@@ -36,7 +40,7 @@ openapi-generator-wso2 generate \
   --git-host github.com \
   --git-user-id n-at-han-k \
   --git-repo-id terraform-provider-wso2 \
-  --additional-properties="providerName=wso2,providerAddress=ghcr.io/n-at-han-k/wso2,providerVersion=1.0.0,resourcePaths=$RESOURCES"
+  --additional-properties="providerName=wso2,providerAddress=ghcr.io/n-at-han-k/wso2,providerVersion=1.0.0"
 
 # The generator cannot write a go.sum -- only the toolchain knows the hashes,
 # and the Dockerfile builds with no network for the module cache.

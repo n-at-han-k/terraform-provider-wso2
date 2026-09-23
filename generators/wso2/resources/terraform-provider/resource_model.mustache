@@ -8,21 +8,27 @@
 {{>partial_header}}
 package provider
 
-{{#responseModel}}
 import (
-{{#hasJsonAttributes}}
+{{#usesEncodingJson}}
 	"encoding/json"
+{{/usesEncodingJson}}
+{{#usesFmt}}
 	"fmt"
+{{/usesFmt}}
+{{#usesEncodingJson}}
 
-{{/hasJsonAttributes}}
+{{/usesEncodingJson}}
+{{#usesTypes}}
 	"github.com/hashicorp/terraform-plugin-framework/types"
-{{#hasJsonAttributes}}
+{{/usesTypes}}
+{{#usesJsontypes}}
 	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
-{{/hasJsonAttributes}}
+{{/usesJsontypes}}
+{{#hasClientModel}}
 
 	"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/internal/client"
+{{/hasClientModel}}
 )
-{{/responseModel}}
 
 // {{resourceClassName}}Model is the Terraform model for {{resourceName}}.
 type {{resourceClassName}}Model struct {
@@ -31,7 +37,7 @@ type {{resourceClassName}}Model struct {
 {{/tfAttributes}}
 }
 
-{{#responseModel}}
+{{#requestModel}}
 // ToClientModel converts a Terraform model to a client model.
 func (m *{{resourceClassName}}Model) ToClientModel() (*client.{{requestModel}}, error) {
 	out := &client.{{requestModel}}{}
@@ -71,7 +77,9 @@ func (m *{{resourceClassName}}Model) ToClientModel() (*client.{{requestModel}}, 
 {{/tfAttributes}}
 	return out, nil
 }
+{{/requestModel}}
 
+{{#responseModel}}
 // FromClientModel updates the Terraform model from a client model.
 func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}) {
 {{#tfAttributes}}

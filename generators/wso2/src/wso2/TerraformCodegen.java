@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.openapitools.codegen.utils.StringUtils.camelize;
 import static org.openapitools.codegen.utils.StringUtils.underscore;
@@ -48,21 +50,10 @@ import static org.openapitools.codegen.utils.StringUtils.underscore;
  */
 public class TerraformCodegen extends TerraformProviderCodegen {
 
-    public static final String RESOURCE_PATHS = "resourcePaths";
-
-    /**
-     * Not a comma: --additional-properties is itself comma-separated, so a
-     * comma here ends the property rather than separating two paths.
-     */
-    private static final String SEPARATOR = "[;|\\s]+";
-
-    /** Collection paths to generate; empty means every path in the document. */
-    private final Set<String> wanted = new LinkedHashSet<>();
+    private static final Pattern PARAM = Pattern.compile("\\{([^{}/]+)\\}");
 
     public TerraformCodegen() {
         super();
-        cliOptions.add(new CliOption(RESOURCE_PATHS,
-                "Collection paths to generate as resources, separated by ';' (default: all)"));
     }
 
     @Override
@@ -94,13 +85,6 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         supportingFiles.add(new SupportingFile("build_image_workflow.mustache",
                 ".github" + File.separator + "workflows", "build-image.yml"));
 
-        Object paths = additionalProperties.get(RESOURCE_PATHS);
-        if (paths != null && !paths.toString().isEmpty()) {
-            Arrays.stream(paths.toString().split(SEPARATOR))
-                    .map(String::trim)
-                    .filter(path -> !path.isEmpty())
-                    .forEach(wanted::add);
-        }
     }
 
     /**
@@ -112,10 +96,6 @@ public class TerraformCodegen extends TerraformProviderCodegen {
     public void addOperationToGroup(String tag, String resourcePath, Operation operation,
                                     CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
         String collection = collectionOf(resourcePath);
-
-        if (!wanted.isEmpty() && !wanted.contains(collection)) {
-            return;
-        }
 
         List<CodegenOperation> group = operations.computeIfAbsent(collection, key -> new ArrayList<>());
 
@@ -130,26 +110,128 @@ public class TerraformCodegen extends TerraformProviderCodegen {
     }
 
     /**
-     * Upstream takes whichever of PUT and PATCH the document lists first as
-     * the update. A PATCH body here is a list of patch operations, and what
-     * the resource sends is the whole model -- so where a document offers
-     * both, the update is the PUT.
+     * Which operation is the create, the read, the update, the delete.
+     *
+     * Upstream asks {@code CodegenOperation.isRestfulCreate()} and friends,
+     * and those cannot answer for a NESTED resource: {@code isMemberPath()}
+     * opens with {@code if (pathParams.size() != 1) return false}, so
+     * {@code /tenants/{tenant-id}/owners/{owner-id}} -- two path params --
+     * looks like nothing at all, and the whole resource comes out empty.
+     *
+     * The shape of the path already says it. This group IS a collection path
+     * and its member path, so an operation on the collection is the create or
+     * the list, and one on the member is the read, the update or the delete.
+     * Marked as vendor extensions, which is upstream's own first-pass hook.
+     *
+     * Where a member path offers both PUT and PATCH the update is the PUT: a
+     * PATCH body is a list of patch operations while the resource sends a
+     * whole model.
      */
     @Override
     public OperationsMap postProcessOperationsWithModels(OperationsMap objs, List<ModelMap> allModels) {
-        for (CodegenOperation op : objs.getOperations().getOperation()) {
-            if ("PUT".equalsIgnoreCase(op.httpMethod) && !op.pathParams.isEmpty()) {
-                op.vendorExtensions.put("x-terraform-is-update", true);
-                break;
+        List<CodegenOperation> group = objs.getOperations().getOperation();
+        String collection = group.isEmpty() ? "" : collectionOf(group.get(0).path);
+
+        // A SINGLETON: one path, no member beneath it.
+        // /applications/{applicationId}/inbound-protocols/oidc is GET, PUT and
+        // DELETE on a fixed path -- the resource IS that path, there is no
+        // collection to list. Reading its GET as a list left fourteen resources
+        // here with no CRUD at all.
+        boolean singleton = group.stream().noneMatch(op -> isMember(collection, op.path));
+
+        CodegenOperation update = null;
+
+        for (CodegenOperation op : group) {
+            boolean own = singleton || !collection.equals(op.path);
+            String method = op.httpMethod.toUpperCase(Locale.ROOT);
+
+            if (!own && "POST".equals(method)) {
+                op.vendorExtensions.put("x-terraform-is-create", true);
+            } else if (!own && "GET".equals(method)) {
+                op.vendorExtensions.put("x-terraform-is-list", true);
+            } else if (own && (singleton || isMember(collection, op.path))) {
+                if ("GET".equals(method)) {
+                    op.vendorExtensions.put("x-terraform-is-read", true);
+                } else if ("DELETE".equals(method)) {
+                    op.vendorExtensions.put("x-terraform-is-delete", true);
+                } else if ("POST".equals(method)) {
+                    op.vendorExtensions.put("x-terraform-is-create", true);
+                } else if ("PUT".equals(method) || ("PATCH".equals(method) && update == null)) {
+                    update = "PUT".equals(method) || update == null ? op : update;
+                }
             }
+        }
+
+        if (update != null) {
+            update.vendorExtensions.put("x-terraform-is-update", true);
         }
 
         OperationsMap processed = super.postProcessOperationsWithModels(objs, allModels);
 
+        // Upstream takes the request body from the CREATE operation only, so a
+        // resource you can update but not create -- a tenant's owner is PUT,
+        // never POSTed -- had no request model, and ToClientModel came out as
+        // `*client.` with no type. The update body is the write shape there.
+        if (processed.getOperations().get("requestModel") == null) {
+            CodegenOperation writes = operationFlagged(group, "x-terraform-is-update");
+
+            if (writes != null && writes.bodyParam != null) {
+                processed.getOperations().put("requestModel", writes.bodyParam.dataType);
+            }
+        }
+
+        // A free-form or list body is not a model. GET /applications/{id}/export
+        // answers an unconstrained object -- returnType `interface{}` -- and
+        // PATCH /organizations/self takes `[]OrganizationPatchRequestItem`, so
+        // the templates spelled `client.interface{}` and `client.[]Organization...`.
+        // Where the name is not a generated model, there is no model. AFTER the
+        // fallback above, or the fallback puts one straight back.
+        for (String key : new String[] { "responseModel", "requestModel" }) {
+            Object name = processed.getOperations().get(key);
+
+            if (name != null && modelNamed(allModels, String.valueOf(name)) == null) {
+                processed.getOperations().put(key, null);
+            }
+        }
+
         reshapeAttributes(processed.getOperations(), allModels);
+        wirePathParams(processed.getOperations(), group);
 
         // Whether the identifier is a string, which decides how a template can
         // ask whether it is empty.
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> tf =
+                (List<Map<String, Object>>) processed.getOperations().get("tfAttributes");
+        Object idName = processed.getOperations().get("idFieldExported");
+        processed.getOperations().put("hasIdAttribute", tf != null
+                && tf.stream().anyMatch(a -> String.valueOf(idName).equals(a.get("goName"))));
+
+        // Exactly which imports the model file needs. Upstream puts its import
+        // block inside {{#responseModel}}, so a resource with no response
+        // model got a struct and no imports at all -- and an import Go does
+        // not need is as fatal as one it does.
+        boolean usesTypes = tf != null && tf.stream()
+                .anyMatch(a -> String.valueOf(a.get("terraformType")).startsWith("types."));
+        boolean usesJson = tf != null && tf.stream()
+                .anyMatch(a -> Boolean.TRUE.equals(a.get("isJson")));
+        boolean request = processed.getOperations().get("requestModel") != null;
+        boolean response = processed.getOperations().get("responseModel") != null;
+
+        // json and fmt are needed only where a conversion actually uses them:
+        // ToClientModel parses the JSON attributes the request carries,
+        // FromClientModel renders the ones the response answers. An import Go
+        // does not need is as fatal as one it does.
+        boolean toJson = request && tf != null && tf.stream().anyMatch(a ->
+                Boolean.TRUE.equals(a.get("isJson")) && Boolean.TRUE.equals(a.get("inRequest")));
+        boolean fromJson = response && tf != null && tf.stream().anyMatch(a ->
+                Boolean.TRUE.equals(a.get("isJson")) && Boolean.TRUE.equals(a.get("readBack")));
+
+        processed.getOperations().put("usesTypes", usesTypes);
+        processed.getOperations().put("usesJsontypes", usesJson);
+        processed.getOperations().put("usesEncodingJson", toJson || fromJson);
+        processed.getOperations().put("usesFmt", toJson);
+        processed.getOperations().put("hasClientModel", request || response);
+
         processed.getOperations().put("idIsString",
                 ".ValueString()".equals(processed.getOperations().get("idFieldValueAccessor")));
 
@@ -187,8 +269,13 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         List<Map<String, Object>> attributes =
                 (List<Map<String, Object>>) operations.get("tfAttributes");
 
+        // Upstream builds this list only when there is a response model, so a
+        // create-only endpoint -- POST /channel-verified-tenants answers 201
+        // and nothing -- got no schema at all, and an empty model struct. The
+        // create body is a schema.
         if (attributes == null) {
-            return;
+            attributes = new ArrayList<>();
+            operations.put("tfAttributes", attributes);
         }
 
         CodegenModel request = modelNamed(allModels, (String) operations.get("requestModel"));
@@ -248,6 +335,194 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         // not needed and the JSON one is.
         operations.put("hasListAttributes", false);
         operations.put("hasJsonAttributes", anyJson);
+    }
+
+
+    /**
+     * A nested resource hangs off its parents, and their identifiers are in
+     * the path, not in any response body.
+     *
+     * {@code /tenants/{tenant-id}/owners/{owner-id}} needs the tenant id to
+     * address an owner at all, so it becomes a Required attribute of the
+     * resource -- nothing else can supply it. Upstream's templates interpolate
+     * exactly ONE argument into the path format, which is why a nested path
+     * came out as {@code %!v(MISSING)}; here each operation carries the whole
+     * ordered argument list, receiver included, so the template just spreads
+     * it.
+     */
+    private void wirePathParams(OperationMap operations, List<CodegenOperation> group) {
+        // Whichever operation spells the longest path addresses the resource:
+        // the member path in a collection, or the single path of a singleton.
+        // Asking only the read (or the delete) left
+        // /tenants/{tenant-id}/lifecycle-status -- a PUT and nothing else --
+        // with no path arguments at all.
+        CodegenOperation addressing = group.stream()
+                .max((a, b) -> Integer.compare(a.path.length(), b.path.length()))
+                .orElse(null);
+
+        if (addressing == null) {
+            return;
+        }
+
+        List<String> names = paramsOf(addressing.path);
+
+        if (names.isEmpty()) {
+            return;
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> attributes =
+                (List<Map<String, Object>>) operations.get("tfAttributes");
+
+        // No response model means no attribute list to add parents to -- but
+        // the path arguments below are still what addresses the resource.
+        if (attributes == null) {
+            attributes = new ArrayList<>();
+            operations.put("tfAttributes", attributes);
+        }
+
+        // Every param but the last: the last one IS this resource's own id,
+        // which upstream already resolved against the response model.
+        for (String name : names.subList(0, names.size() - 1)) {
+            String terraformName = underscore(name.replace('-', '_')).toLowerCase(Locale.ROOT);
+
+            if (attributes.stream().anyMatch(a -> terraformName.equals(a.get("terraformName")))) {
+                continue;
+            }
+
+            Map<String, Object> parent = new HashMap<>();
+            parent.put("name", name);
+            parent.put("terraformName", terraformName);
+            parent.put("goName", camelize(terraformName));
+            parent.put("goType", "string");
+            parent.put("terraformType", "types.String");
+            parent.put("terraformAttrType", "schema.StringAttribute");
+            parent.put("isString", true);
+            parent.put("isRequired", true);
+            parent.put("isOptional", false);
+            parent.put("isComputed", false);
+            parent.put("isSensitive", false);
+            // It addresses the resource; it is not part of any body, and no
+            // response answers it.
+            parent.put("inRequest", false);
+            parent.put("readBack", false);
+            parent.put("description", "Identifier of the parent " + name.replace("-id", "") + ".");
+            attributes.add(parent);
+        }
+
+        // The resource's OWN identifier, when no response body carries it:
+        // /applications/loginflow/status/{operation_id} is addressed by a value
+        // that only the caller knows, and upstream looked for it among the
+        // response model's properties and found nothing.
+        final String guessedId = String.valueOf(operations.get("idFieldExported"));
+        boolean creatable = operationFlagged(group, "x-terraform-is-create") != null;
+
+        if (attributes.stream().noneMatch(a -> guessedId.equals(a.get("goName")))) {
+            Map<String, Object> id = new HashMap<>();
+            String last = names.get(names.size() - 1);
+            String terraformName = underscore(last.replace('-', '_')).toLowerCase(Locale.ROOT);
+
+            // Upstream guessed "id" off the read response and there is none, so
+            // the identifier is what the path actually calls it.
+            String ownId = camelize(terraformName);
+            operations.put("idFieldExported", ownId);
+            operations.put("idFieldTerraformName", terraformName);
+            operations.put("idFieldValueAccessor", ".ValueString()");
+
+            id.put("name", last);
+            id.put("terraformName", terraformName);
+            id.put("goName", ownId);
+            id.put("goType", "string");
+            id.put("terraformType", "types.String");
+            id.put("terraformAttrType", "schema.StringAttribute");
+            id.put("isString", true);
+            // With no create there is nobody to assign it, so it is asked for.
+            id.put("isRequired", !creatable);
+            id.put("isOptional", creatable);
+            id.put("isComputed", creatable);
+            id.put("isSensitive", false);
+            id.put("inRequest", false);
+            id.put("readBack", false);
+            id.put("description", "Identifier of the " + last.replace("-id", "") + ".");
+            attributes.add(id);
+        }
+
+        // One accessor per param name, then each operation spreads the params
+        // ITS OWN path spells. Slicing the last one off as "the id" was wrong
+        // for a singleton, whose path is the whole address --
+        // .../oidc/revoke got zero arguments for one %v.
+        Map<String, String> accessors = new LinkedHashMap<>();
+
+        for (String name : names) {
+            boolean own = name.equals(names.get(names.size() - 1));
+            String goName = own
+                    ? String.valueOf(operations.get("idFieldExported"))
+                    : camelize(underscore(name.replace('-', '_')).toLowerCase(Locale.ROOT));
+            String accessor = own
+                    ? String.valueOf(operations.get("idFieldValueAccessor"))
+                    : ".ValueString()";
+            accessors.put(name, goName + accessor);
+        }
+
+        argsOf(operations, group, "x-terraform-is-create", "createArgs", "plan", accessors);
+        argsOf(operations, group, "x-terraform-is-read", "readArgs", "state", accessors);
+        argsOf(operations, group, "x-terraform-is-read", "configArgs", "config", accessors);
+        // The create reads the new resource back, and there it is `plan` that
+        // holds the identifier the Location header just supplied.
+        argsOf(operations, group, "x-terraform-is-read", "readArgsPlan", "plan", accessors);
+        argsOf(operations, group, "x-terraform-is-update", "updateArgs", "plan", accessors);
+        argsOf(operations, group, "x-terraform-is-delete", "deleteArgs", "state", accessors);
+
+        CodegenOperation create = operationFlagged(group, "x-terraform-is-create");
+        if (create != null) {
+            operations.put("createPath",
+                    create.vendorExtensions.getOrDefault("x-terraform-path-fmt", create.path));
+            operations.put("createHasPathParams", !paramsOf(create.path).isEmpty());
+        }
+    }
+
+    /** The arguments one operation's own path needs, receiver baked in. */
+    private void argsOf(OperationMap operations, List<CodegenOperation> group, String flag,
+                        String key, String receiver, Map<String, String> accessors) {
+        CodegenOperation op = operationFlagged(group, flag);
+
+        if (op == null) {
+            return;
+        }
+
+        List<Map<String, Object>> args = new ArrayList<>();
+
+        for (String name : paramsOf(op.path)) {
+            String accessor = accessors.get(name);
+
+            if (accessor == null) {
+                continue;
+            }
+            Map<String, Object> arg = new HashMap<>();
+            arg.put("expr", receiver + "." + accessor);
+            args.add(arg);
+        }
+
+        operations.put(key, args);
+    }
+
+    private CodegenOperation operationFlagged(List<CodegenOperation> group, String flag) {
+        return group.stream()
+                .filter(op -> Boolean.TRUE.equals(op.vendorExtensions.get(flag)))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /** The {param} names of a path, in the order the path spells them. */
+    private List<String> paramsOf(String path) {
+        List<String> names = new ArrayList<>();
+        Matcher matcher = PARAM.matcher(path);
+
+        while (matcher.find()) {
+            names.add(matcher.group(1));
+        }
+
+        return names;
     }
 
     /** A list or an object travels as JSON; the templates convert those. */
@@ -349,10 +624,46 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         return processed;
     }
 
-    /** {@code /organizations} -> {@code Organization}, which upstream reads as the resource name. */
+    /**
+     * The whole path names the resource, not just its last segment.
+     *
+     * {@code /organizations/{organization-id}/applications/{application-id}/share}
+     * and {@code /applications/{applicationId}/share} both end in "share", so
+     * naming by the last segment gave both the same file and the second one
+     * SILENTLY overwrote the first -- a resource that vanished with no error
+     * anywhere. Every literal segment, singularised, is unambiguous:
+     * organization_application_share and application_share.
+     *
+     * {@code /tenants/{tenant-id}/owners} -> {@code TenantOwner}.
+     */
     @Override
     public String toApiName(String name) {
-        return camelize(singular(lastSegment(name)));
+        StringBuilder parts = new StringBuilder();
+
+        for (String segment : trim(name).split("/")) {
+            if (segment.isEmpty() || segment.startsWith("{")) {
+                continue;
+            }
+            if (parts.length() > 0) {
+                parts.append('_');
+            }
+            parts.append(underscore(singular(segment).replace('-', '_')).toLowerCase(Locale.ROOT));
+        }
+
+        return camelize(parts.toString());
+    }
+
+    private String trim(String path) {
+        String trimmed = path;
+
+        while (trimmed.startsWith("/")) {
+            trimmed = trimmed.substring(1);
+        }
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+
+        return trimmed;
     }
 
     @Override
@@ -370,20 +681,33 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         return path;
     }
 
+    /** The member of THIS collection: its path plus one trailing {param}. */
+    private boolean isMember(String collection, String path) {
+        return collectionOf(path).equals(collection) && !path.equals(collection);
+    }
+
     private String lastSegment(String path) {
         String trimmed = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
         return trimmed.substring(trimmed.lastIndexOf('/') + 1);
     }
 
-    // ponytail: a trailing "s" is the whole pluralisation rule. The paths this
-    // generator is pointed at are organizations, tenants and applications; a
-    // document spelling "addresses" or "people" wants a real inflector.
+    /**
+     * A trailing "s" is not always a plural: "lifecycle-status" became
+     * "lifecycle_statu" and "passive-sts" became "passive_st". Latin endings
+     * and that one acronym are left alone; "tenants" and "secrets" are still
+     * plurals and still lose it.
+     *
+     * ponytail: not an inflector. A document saying "addresses" or "people"
+     * wants a real one.
+     */
+    private static final List<String> KEEP = Arrays.asList("ss", "us", "os", "sts");
+
     private String singular(String name) {
         String lower = name.toLowerCase(Locale.ROOT);
 
-        if (lower.endsWith("s") && !lower.endsWith("ss")) {
-            return name.substring(0, name.length() - 1);
+        if (!lower.endsWith("s") || KEEP.stream().anyMatch(lower::endsWith)) {
+            return name;
         }
-        return name;
+        return name.substring(0, name.length() - 1);
     }
 }

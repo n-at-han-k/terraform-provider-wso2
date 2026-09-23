@@ -16,15 +16,42 @@ compiles what is in the tree, not what a regeneration would produce. Run
 
 ## Where it comes from
 
-| document | resource |
-|---|---|
-| `tenant-management.yaml` | `wso2_tenant` — root organizations |
-| `org.wso2.carbon.identity.organization.management.yaml` | `wso2_organization` |
-| `applications.yaml` | `wso2_application` |
+Three documents WSO2 publishes with the server itself — tenant management,
+organization management, application management — merged into one and read in a
+single pass. **49 resources and 49 data sources**, one per collection or
+singleton path in those documents. Nothing is filtered: generating less than
+the document describes took extra code to arrange, and every path left out is a
+thing nobody can manage.
 
-Those live in [wso2/identity-api-server], cloned into `reference/` along with
-[openapi-generator] itself. `reference/` is gitignored — it is upstream, read
-only, and nothing here is built from a copy of it that this repo keeps.
+```bash
+nix develop
+bin/generate        # three WSO2 documents in, this repo out
+```
+
+Some you will want first:
+
+| resource | what |
+|---|---|
+| `wso2_tenant` | root organizations |
+| `wso2_tenant_owner` | the owner account, including its password |
+| `wso2_organization` | organizations under a tenant |
+| `wso2_application` | applications |
+| `wso2_application_inbound_protocol_oidc` | an application's OIDC configuration |
+
+A resource is named after its whole path, not its last segment.
+`/organizations/{organization-id}/applications/{application-id}/share` and
+`/applications/{applicationId}/share` both end in "share", and naming by the
+last segment gave them the same filename — the second silently overwrote the
+first, a resource that vanished with no error anywhere. So they are
+`wso2_organization_application_share` and `wso2_application_share`.
+
+Everything under `internal/` is generated and **committed**: the Dockerfile
+compiles what is in the tree, not what a regeneration would produce. Run
+`bin/generate`, read the diff, commit it.
+
+Those documents live in [wso2/identity-api-server], cloned into `reference/`
+along with [openapi-generator] itself. `reference/` is gitignored — it is
+upstream, read only.
 
 ```bash
 mkdir -p reference && cd reference
@@ -34,8 +61,9 @@ git clone --depth 1 --filter=blob:none https://github.com/wso2/identity-api-serv
 The three documents are separate APIs and openapi-generator reads one document
 per run, so `bin/merge-specs` puts them together first. They disagree about
 what `Error`, `Link` and `Attribute` are, and two of them spell a share
-operation with the same `operationId`, so the merge renames per source rather
-than letting one definition quietly win.
+operation with the same `operationId` — which makes a merged document *invalid*,
+not merely ambiguous — so the merge renames per source rather than letting one
+definition quietly win.
 
 ## The generator
 
