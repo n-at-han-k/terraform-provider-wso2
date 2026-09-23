@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -99,6 +101,7 @@ func (r *ApplicationImportResource) Update(ctx context.Context, req resource.Upd
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
 
 	// This operation takes no request body.
 	var reqBody interface{}

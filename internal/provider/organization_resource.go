@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"encoding/json"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -217,13 +219,22 @@ func (r *OrganizationResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state OrganizationModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid organization configuration", err.Error())
 		return
 	}
 
-	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/organizations/%v", plan.Id.ValueString()), reqBody)
+	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/organizations/%v", state.Id.ValueString()), reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating organization", err.Error())
 		return

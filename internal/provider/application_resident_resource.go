@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"encoding/json"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -110,6 +112,7 @@ func (r *ApplicationResidentResource) Update(ctx context.Context, req resource.U
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
 
 	reqBody, err := plan.ToClientModel()
 	if err != nil {

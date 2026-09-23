@@ -6,6 +6,10 @@ import (
 	"fmt"
 	"encoding/json"
 
+
+	"strings"
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -224,5 +228,18 @@ func (r *ApplicationInboundProtocolOidcSecretResource) Delete(ctx context.Contex
 }
 
 func (r *ApplicationInboundProtocolOidcSecretResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("secret_id"), req, resp)
+
+	// A nested resource is addressed by its parents as well as itself, and an
+	// import id carries only what it is given.
+	parts := strings.Split(req.ID, "/")
+
+	if len(parts) != 2 {
+		resp.Diagnostics.AddError(
+			"Unexpected import identifier",
+			"Expected \"<application_id>/<secret_id>\", got: "+req.ID,
+		)
+		return
+	}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("application_id"), parts[0])...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("secret_id"), parts[1])...)
 }

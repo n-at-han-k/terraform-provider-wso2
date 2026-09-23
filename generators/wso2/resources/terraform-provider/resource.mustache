@@ -19,6 +19,10 @@ import (
 	"encoding/json"
 {{/responseModel}}
 
+{{#importParts}}{{#-first}}
+	"strings"
+{{/-first}}{{/importParts}}
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -240,6 +244,17 @@ func (r *{{resourceClassName}}Resource) Update(ctx context.Context, req resource
 		return
 	}
 
+{{#updateHasPathParams}}
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state {{resourceClassName}}Model
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+{{/updateHasPathParams}}
+
 {{#requestModel}}
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
@@ -362,6 +377,23 @@ func (r *{{resourceClassName}}Resource) Delete(ctx context.Context, req resource
 {{/hasDelete}}
 
 func (r *{{resourceClassName}}Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+{{#importParts}}{{#-first}}
+	// A nested resource is addressed by its parents as well as itself, and an
+	// import id carries only what it is given.
+	parts := strings.Split(req.ID, "/")
+
+	if len(parts) != {{importPartCount}} {
+		resp.Diagnostics.AddError(
+			"Unexpected import identifier",
+			"Expected \"{{{importHint}}}\", got: "+req.ID,
+		)
+		return
+	}
+{{/-first}}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("{{terraformName}}"), parts[{{index}}])...)
+{{/importParts}}
+{{^importParts}}
 	resource.ImportStatePassthroughID(ctx, path.Root("{{idFieldTerraformName}}"), req, resp)
+{{/importParts}}
 }
 {{/operations}}

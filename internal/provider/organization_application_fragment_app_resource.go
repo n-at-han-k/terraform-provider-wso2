@@ -5,6 +5,10 @@ import (
 	"context"
 	"fmt"
 
+
+	"strings"
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -106,5 +110,18 @@ func (r *OrganizationApplicationFragmentAppResource) Delete(ctx context.Context,
 }
 
 func (r *OrganizationApplicationFragmentAppResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("application_id"), req, resp)
+
+	// A nested resource is addressed by its parents as well as itself, and an
+	// import id carries only what it is given.
+	parts := strings.Split(req.ID, "/")
+
+	if len(parts) != 2 {
+		resp.Diagnostics.AddError(
+			"Unexpected import identifier",
+			"Expected \"<organization_id>/<application_id>\", got: "+req.ID,
+		)
+		return
+	}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("organization_id"), parts[0])...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("application_id"), parts[1])...)
 }

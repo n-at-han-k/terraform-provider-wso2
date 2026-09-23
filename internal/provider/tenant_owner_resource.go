@@ -6,6 +6,10 @@ import (
 	"fmt"
 	"encoding/json"
 
+
+	"strings"
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -140,13 +144,22 @@ func (r *TenantOwnerResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state TenantOwnerModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid tenant_owner configuration", err.Error())
 		return
 	}
 
-	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/tenants/%v/owners/%v", plan.TenantId.ValueString(), plan.Id.ValueString()), reqBody)
+	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/tenants/%v/owners/%v", state.TenantId.ValueString(), state.Id.ValueString()), reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating tenant_owner", err.Error())
 		return
@@ -169,5 +182,18 @@ func (r *TenantOwnerResource) Delete(ctx context.Context, req resource.DeleteReq
 }
 
 func (r *TenantOwnerResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+
+	// A nested resource is addressed by its parents as well as itself, and an
+	// import id carries only what it is given.
+	parts := strings.Split(req.ID, "/")
+
+	if len(parts) != 2 {
+		resp.Diagnostics.AddError(
+			"Unexpected import identifier",
+			"Expected \"<tenant_id>/<id>\", got: "+req.ID,
+		)
+		return
+	}
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("tenant_id"), parts[0])...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), parts[1])...)
 }

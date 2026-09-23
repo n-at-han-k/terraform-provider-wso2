@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"encoding/json"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -121,13 +123,22 @@ func (r *ApplicationInboundProtocolPassiveStsResource) Update(ctx context.Contex
 		return
 	}
 
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state ApplicationInboundProtocolPassiveStsModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid application_inbound_protocol_passive_sts configuration", err.Error())
 		return
 	}
 
-	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/applications/%v/inbound-protocols/passive-sts", plan.ApplicationId.ValueString()), reqBody)
+	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/applications/%v/inbound-protocols/passive-sts", state.ApplicationId.ValueString()), reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating application_inbound_protocol_passive_sts", err.Error())
 		return

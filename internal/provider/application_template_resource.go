@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"encoding/json"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -199,13 +201,22 @@ func (r *ApplicationTemplateResource) Update(ctx context.Context, req resource.U
 		return
 	}
 
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state ApplicationTemplateModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid application_template configuration", err.Error())
 		return
 	}
 
-	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/applications/templates/%v", plan.Id.ValueString()), reqBody)
+	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/applications/templates/%v", state.Id.ValueString()), reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating application_template", err.Error())
 		return

@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -77,13 +79,22 @@ func (r *ApplicationOwnerResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state ApplicationOwnerModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid application_owner configuration", err.Error())
 		return
 	}
 
-	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/applications/%v/owner", plan.Id.ValueString()), reqBody)
+	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/applications/%v/owner", state.Id.ValueString()), reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating application_owner", err.Error())
 		return

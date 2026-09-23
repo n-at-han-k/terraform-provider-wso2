@@ -470,8 +470,42 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         // The create reads the new resource back, and there it is `plan` that
         // holds the identifier the Location header just supplied.
         argsOf(operations, group, "x-terraform-is-read", "readArgsPlan", "plan", accessors);
-        argsOf(operations, group, "x-terraform-is-update", "updateArgs", "plan", accessors);
+        // From STATE, not the plan: an identifier cannot change on an update,
+        // and the plan's copy of a Computed one is unknown.
+        argsOf(operations, group, "x-terraform-is-update", "updateArgs", "state", accessors);
         argsOf(operations, group, "x-terraform-is-delete", "deleteArgs", "state", accessors);
+
+        // A nested resource cannot be imported by its own id alone: nothing
+        // else tells Terraform which tenant an owner belongs to, and the
+        // update would then PUT to /tenants//owners/<id>.
+        List<Map<String, Object>> parts = new ArrayList<>();
+        StringBuilder hint = new StringBuilder();
+
+        for (int i = 0; i < names.size(); i++) {
+            // The last one is this resource's OWN identifier, and the schema
+            // may well call it something other than the path does: the owner
+            // of /tenants/{tenant-id}/owners/{owner-id} has an `id` property,
+            // so the attribute is `id` and setting `owner_id` on import fails.
+            String terraformName = i == names.size() - 1
+                    ? String.valueOf(operations.get("idFieldTerraformName"))
+                    : underscore(names.get(i).replace('-', '_')).toLowerCase(Locale.ROOT);
+            Map<String, Object> part = new HashMap<>();
+
+            part.put("terraformName", terraformName);
+            part.put("index", i);
+            parts.add(part);
+
+            if (hint.length() > 0) {
+                hint.append('/');
+            }
+            hint.append('<').append(terraformName).append('>');
+        }
+
+        if (names.size() > 1) {
+            operations.put("importParts", parts);
+            operations.put("importPartCount", names.size());
+            operations.put("importHint", hint.toString());
+        }
 
         CodegenOperation create = operationFlagged(group, "x-terraform-is-create");
         if (create != null) {

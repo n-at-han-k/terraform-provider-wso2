@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+
+
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -81,13 +83,22 @@ func (r *TenantLifecycleStatusResource) Update(ctx context.Context, req resource
 		return
 	}
 
+	// The identifiers come off state: they cannot change on an update, and the
+	// plan's copy of a Computed one is unknown -- which is also the only place
+	// an imported nested resource's parents live.
+	var state TenantLifecycleStatusModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid tenant_lifecycle_status configuration", err.Error())
 		return
 	}
 
-	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/tenants/%v/lifecycle-status", plan.TenantId.ValueString()), reqBody)
+	respBody, err := r.client.DoRequest(ctx, "PUT", fmt.Sprintf("/tenants/%v/lifecycle-status", state.TenantId.ValueString()), reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error updating tenant_lifecycle_status", err.Error())
 		return
