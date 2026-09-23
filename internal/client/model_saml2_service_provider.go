@@ -9,10 +9,10 @@ type Saml2ServiceProvider struct {
 	AssertionConsumerUrls []string `json:"assertionConsumerUrls,omitempty"`
 	DefaultAssertionConsumerUrl string `json:"defaultAssertionConsumerUrl,omitempty"`
 	IdpEntityIdAlias string `json:"idpEntityIdAlias,omitempty"`
-	SingleSignOnProfile SingleSignOnProfile `json:"singleSignOnProfile,omitempty"`
-	AttributeProfile SamlAttributeProfile `json:"attributeProfile,omitempty"`
-	SingleLogoutProfile SingleLogoutProfile `json:"singleLogoutProfile,omitempty"`
-	RequestValidation SamlRequestValidation `json:"requestValidation,omitempty"`
-	ResponseSigning SamlResponseSigning `json:"responseSigning,omitempty"`
+	SingleSignOnProfile *SingleSignOnProfile `json:"singleSignOnProfile,omitempty"`
+	AttributeProfile *SamlAttributeProfile `json:"attributeProfile,omitempty"`
+	SingleLogoutProfile *SingleLogoutProfile `json:"singleLogoutProfile,omitempty"`
+	RequestValidation *SamlRequestValidation `json:"requestValidation,omitempty"`
+	ResponseSigning *SamlResponseSigning `json:"responseSigning,omitempty"`
 	EnableAssertionQueryProfile bool `json:"enableAssertionQueryProfile,omitempty"`
 }

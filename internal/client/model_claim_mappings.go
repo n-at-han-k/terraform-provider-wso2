@@ -5,5 +5,5 @@ package client
 // ClaimMappings - ClaimMappings struct
 type ClaimMappings struct {
 	ApplicationClaim string `json:"applicationClaim,omitempty"`
-	LocalClaim Claim `json:"localClaim,omitempty"`
+	LocalClaim *Claim `json:"localClaim,omitempty"`
 }

@@ -14,9 +14,9 @@ type ApplicationPatchModel struct {
 	TemplateVersion string `json:"templateVersion,omitempty"`
 	EnhancedOrgAuthenticationEnabled bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
 	ApplicationEnabled bool `json:"applicationEnabled,omitempty"`
-	AssociatedRoles AssociatedRolesConfig `json:"associatedRoles,omitempty"`
-	ClaimConfiguration ClaimConfiguration `json:"claimConfiguration,omitempty"`
-	AuthenticationSequence AuthenticationSequence `json:"authenticationSequence,omitempty"`
-	AdvancedConfigurations AdvancedApplicationConfiguration `json:"advancedConfigurations,omitempty"`
-	ProvisioningConfigurations ProvisioningConfiguration `json:"provisioningConfigurations,omitempty"`
+	AssociatedRoles *AssociatedRolesConfig `json:"associatedRoles,omitempty"`
+	ClaimConfiguration *ClaimConfiguration `json:"claimConfiguration,omitempty"`
+	AuthenticationSequence *AuthenticationSequence `json:"authenticationSequence,omitempty"`
+	AdvancedConfigurations *AdvancedApplicationConfiguration `json:"advancedConfigurations,omitempty"`
+	ProvisioningConfigurations *ProvisioningConfiguration `json:"provisioningConfigurations,omitempty"`
 }

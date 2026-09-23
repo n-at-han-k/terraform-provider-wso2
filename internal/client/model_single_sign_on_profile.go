@@ -8,5 +8,5 @@ type SingleSignOnProfile struct {
 	EnableSignatureValidationForArtifactBinding bool `json:"enableSignatureValidationForArtifactBinding,omitempty"`
 	AttributeConsumingServiceIndex string `json:"attributeConsumingServiceIndex,omitempty"`
 	EnableIdpInitiatedSingleSignOn bool `json:"enableIdpInitiatedSingleSignOn,omitempty"`
-	Assertion SamlAssertionConfiguration `json:"assertion,omitempty"`
+	Assertion *SamlAssertionConfiguration `json:"assertion,omitempty"`
 }

@@ -5,5 +5,5 @@ package client
 // RoleShareConfig - RoleShareConfig struct
 type RoleShareConfig struct {
 	DisplayName string `json:"displayName,omitempty"`
-	Audience RoleShareConfigAudience `json:"audience,omitempty"`
+	Audience *RoleShareConfigAudience `json:"audience,omitempty"`
 }

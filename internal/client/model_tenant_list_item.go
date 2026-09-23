@@ -9,6 +9,6 @@ type TenantListItem struct {
 	Domain string `json:"domain,omitempty"`
 	Owners []OwnerResponse `json:"owners,omitempty"`
 	CreatedDate string `json:"createdDate,omitempty"`
-	LifecycleStatus LifeCycleStatus `json:"lifecycleStatus,omitempty"`
+	LifecycleStatus *LifeCycleStatus `json:"lifecycleStatus,omitempty"`
 	Region string `json:"region,omitempty"`
 }

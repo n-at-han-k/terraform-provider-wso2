@@ -6,5 +6,5 @@ package client
 type Saml2Configuration struct {
 	MetadataFile string `json:"metadataFile,omitempty"`
 	MetadataURL string `json:"metadataURL,omitempty"`
-	ManualConfiguration Saml2ServiceProvider `json:"manualConfiguration,omitempty"`
+	ManualConfiguration *Saml2ServiceProvider `json:"manualConfiguration,omitempty"`
 }

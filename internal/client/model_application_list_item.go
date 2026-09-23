@@ -15,10 +15,10 @@ type ApplicationListItem struct {
 	Realm string `json:"realm,omitempty"`
 	Access string `json:"access,omitempty"`
 	Self string `json:"self,omitempty"`
-	AdvancedConfigurations AdvancedApplicationConfiguration `json:"advancedConfigurations,omitempty"`
+	AdvancedConfigurations *AdvancedApplicationConfiguration `json:"advancedConfigurations,omitempty"`
 	TemplateId string `json:"templateId,omitempty"`
 	TemplateVersion string `json:"templateVersion,omitempty"`
-	AssociatedRoles AssociatedRolesConfig `json:"associatedRoles,omitempty"`
+	AssociatedRoles *AssociatedRolesConfig `json:"associatedRoles,omitempty"`
 	EnhancedOrgAuthenticationEnabled bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
 	ApplicationEnabled bool `json:"applicationEnabled,omitempty"`
 }

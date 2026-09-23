@@ -5,5 +5,5 @@ package client
 // SharingMode - SharingMode struct
 type SharingMode struct {
 	Policy string `json:"policy,omitempty"`
-	RoleSharing RoleSharing `json:"roleSharing,omitempty"`
+	RoleSharing *RoleSharing `json:"roleSharing,omitempty"`
 }

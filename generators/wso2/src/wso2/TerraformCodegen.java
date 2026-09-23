@@ -660,6 +660,22 @@ public class TerraformCodegen extends TerraformProviderCodegen {
 
         for (ModelMap map : processed.getModels()) {
             for (CodegenProperty property : map.getModel().vars) {
+                // A nested object is a POINTER, because Go's `omitempty` does
+                // nothing for a struct: an unset one still goes out as
+                // "associatedRoles":{"allowedAudience":""}, and WSO2 answers
+                // UE-10000, "provided request body content is not in the
+                // expected format" -- the empty string is not one of the
+                // audiences its enum allows. A nil pointer is simply absent.
+                // complexType, not isModel: a property written as
+                // `allOf: [$ref: FapiProfile]` -- which is how this document
+                // attaches a description to a ref -- is not flagged a model,
+                // and went out as "fapiProfile":{} regardless.
+                if ((property.isModel || property.complexType != null)
+                        && !property.isArray && !property.isMap
+                        && !property.dataType.startsWith("*")) {
+                    property.dataType = "*" + property.dataType;
+                }
+
                 property.vendorExtensions.put("x-go-datatag",
                         " `json:\"" + property.baseName + ",omitempty\"`");
             }

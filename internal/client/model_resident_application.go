@@ -4,5 +4,5 @@ package client
 
 // ResidentApplication - ResidentApplication struct
 type ResidentApplication struct {
-	ProvisioningConfigurations ProvisioningConfiguration `json:"provisioningConfigurations,omitempty"`
+	ProvisioningConfigurations *ProvisioningConfiguration `json:"provisioningConfigurations,omitempty"`
 }

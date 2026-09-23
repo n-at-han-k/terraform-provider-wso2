@@ -14,7 +14,7 @@ type GetOrganizationResponse struct {
 	LastModified string `json:"lastModified,omitempty"`
 	Type string `json:"type,omitempty"`
 	HasChildren bool `json:"hasChildren,omitempty"`
-	Parent ParentOrganization `json:"parent,omitempty"`
+	Parent *ParentOrganization `json:"parent,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 	Permissions []string `json:"permissions,omitempty"`
 	AncestorPath []GetOrganizationResponseAncestorPathInner `json:"ancestorPath,omitempty"`

@@ -8,5 +8,5 @@ type SingleLogoutProfile struct {
 	LogoutRequestUrl string `json:"logoutRequestUrl,omitempty"`
 	LogoutResponseUrl string `json:"logoutResponseUrl,omitempty"`
 	LogoutMethod string `json:"logoutMethod,omitempty"`
-	IdpInitiatedSingleLogout IdpInitiatedSingleLogout `json:"idpInitiatedSingleLogout,omitempty"`
+	IdpInitiatedSingleLogout *IdpInitiatedSingleLogout `json:"idpInitiatedSingleLogout,omitempty"`
 }

@@ -4,6 +4,6 @@ package client
 
 // ProvisioningConfiguration - ProvisioningConfiguration struct
 type ProvisioningConfiguration struct {
-	InboundProvisioning InboundScimProvisioningConfiguration `json:"inboundProvisioning,omitempty"`
+	InboundProvisioning *InboundScimProvisioningConfiguration `json:"inboundProvisioning,omitempty"`
 	OutboundProvisioningIdps []OutboundProvisioningConfiguration `json:"outboundProvisioningIdps,omitempty"`
 }

@@ -13,7 +13,7 @@ type OrganizationMetadata struct {
 	Created string `json:"created,omitempty"`
 	LastModified string `json:"lastModified,omitempty"`
 	Type string `json:"type,omitempty"`
-	Parent ParentOrganization `json:"parent,omitempty"`
+	Parent *ParentOrganization `json:"parent,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 	Permissions []string `json:"permissions,omitempty"`
 	DiscoveryAttributes []DiscoveryAttribute `json:"discoveryAttributes,omitempty"`

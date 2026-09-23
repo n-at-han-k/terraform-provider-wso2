@@ -12,6 +12,6 @@ type ApplicationBasicOrganizationResponse struct {
 	Ref string `json:"ref,omitempty"`
 	HasChildren bool `json:"hasChildren,omitempty"`
 	DepthFromRoot int32 `json:"depthFromRoot,omitempty"`
-	SharingMode SharingMode `json:"sharingMode,omitempty"`
+	SharingMode *SharingMode `json:"sharingMode,omitempty"`
 	Roles []RoleShareConfig `json:"roles,omitempty"`
 }

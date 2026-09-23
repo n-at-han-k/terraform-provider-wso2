@@ -7,5 +7,5 @@ type IdTokenConfiguration struct {
 	ExpiryInSeconds int64 `json:"expiryInSeconds,omitempty"`
 	Audience []string `json:"audience,omitempty"`
 	IdTokenSignedResponseAlg string `json:"idTokenSignedResponseAlg,omitempty"`
-	Encryption IdTokenEncryptionConfiguration `json:"encryption,omitempty"`
+	Encryption *IdTokenEncryptionConfiguration `json:"encryption,omitempty"`
 }

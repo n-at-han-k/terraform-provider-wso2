@@ -4,5 +4,5 @@ package client
 
 // WsTrustMetaData - WsTrustMetaData struct
 type WsTrustMetaData struct {
-	CertificateAlias MetadataProperty `json:"certificateAlias,omitempty"`
+	CertificateAlias *MetadataProperty `json:"certificateAlias,omitempty"`
 }

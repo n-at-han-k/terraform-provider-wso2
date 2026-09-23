@@ -4,8 +4,8 @@ package client
 
 // FapiMetadata - FapiMetadata struct
 type FapiMetadata struct {
-	AllowedFapiProfiles MetadataProperty `json:"allowedFapiProfiles,omitempty"`
-	AllowedSignatureAlgorithms MetadataProperty `json:"allowedSignatureAlgorithms,omitempty"`
-	AllowedEncryptionAlgorithms MetadataProperty `json:"allowedEncryptionAlgorithms,omitempty"`
-	TokenEndpointAuthMethod ClientAuthenticationMethodMetadata `json:"tokenEndpointAuthMethod,omitempty"`
+	AllowedFapiProfiles *MetadataProperty `json:"allowedFapiProfiles,omitempty"`
+	AllowedSignatureAlgorithms *MetadataProperty `json:"allowedSignatureAlgorithms,omitempty"`
+	AllowedEncryptionAlgorithms *MetadataProperty `json:"allowedEncryptionAlgorithms,omitempty"`
+	TokenEndpointAuthMethod *ClientAuthenticationMethodMetadata `json:"tokenEndpointAuthMethod,omitempty"`
 }

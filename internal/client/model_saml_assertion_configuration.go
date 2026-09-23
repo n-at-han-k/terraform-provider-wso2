@@ -8,5 +8,5 @@ type SamlAssertionConfiguration struct {
 	Audiences []string `json:"audiences,omitempty"`
 	Recipients []string `json:"recipients,omitempty"`
 	DigestAlgorithm string `json:"digestAlgorithm,omitempty"`
-	Encryption AssertionEncryptionConfiguration `json:"encryption,omitempty"`
+	Encryption *AssertionEncryptionConfiguration `json:"encryption,omitempty"`
 }

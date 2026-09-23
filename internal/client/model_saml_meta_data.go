@@ -5,9 +5,9 @@ package client
 // SamlMetaData - SamlMetaData struct
 type SamlMetaData struct {
 	DefaultNameIdFormat string `json:"defaultNameIdFormat,omitempty"`
-	CertificateAlias MetadataProperty `json:"certificateAlias,omitempty"`
-	ResponseSigningAlgorithm MetadataProperty `json:"responseSigningAlgorithm,omitempty"`
-	ResponseDigestAlgorithm MetadataProperty `json:"responseDigestAlgorithm,omitempty"`
-	AssertionEncryptionAlgorithm MetadataProperty `json:"assertionEncryptionAlgorithm,omitempty"`
-	KeyEncryptionAlgorithm MetadataProperty `json:"keyEncryptionAlgorithm,omitempty"`
+	CertificateAlias *MetadataProperty `json:"certificateAlias,omitempty"`
+	ResponseSigningAlgorithm *MetadataProperty `json:"responseSigningAlgorithm,omitempty"`
+	ResponseDigestAlgorithm *MetadataProperty `json:"responseDigestAlgorithm,omitempty"`
+	AssertionEncryptionAlgorithm *MetadataProperty `json:"assertionEncryptionAlgorithm,omitempty"`
+	KeyEncryptionAlgorithm *MetadataProperty `json:"keyEncryptionAlgorithm,omitempty"`
 }

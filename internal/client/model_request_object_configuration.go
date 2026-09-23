@@ -5,5 +5,5 @@ package client
 // RequestObjectConfiguration - RequestObjectConfiguration struct
 type RequestObjectConfiguration struct {
 	RequestObjectSigningAlg string `json:"requestObjectSigningAlg,omitempty"`
-	Encryption RequestObjectEncryptionConfiguration `json:"encryption,omitempty"`
+	Encryption *RequestObjectEncryptionConfiguration `json:"encryption,omitempty"`
 }

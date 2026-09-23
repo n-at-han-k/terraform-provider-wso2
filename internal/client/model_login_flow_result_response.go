@@ -4,6 +4,6 @@ package client
 
 // LoginFlowResultResponse - LoginFlowResultResponse struct
 type LoginFlowResultResponse struct {
-	Status StatusEnum `json:"status,omitempty"`
+	Status *StatusEnum `json:"status,omitempty"`
 	Data map[string]interface{} `json:"data,omitempty"`
 }

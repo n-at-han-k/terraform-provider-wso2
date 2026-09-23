@@ -7,6 +7,6 @@ type ClaimConfiguration struct {
 	Dialect string `json:"dialect,omitempty"`
 	ClaimMappings []ClaimMappings `json:"claimMappings,omitempty"`
 	RequestedClaims []RequestedClaimConfiguration `json:"requestedClaims,omitempty"`
-	Subject SubjectConfig `json:"subject,omitempty"`
-	Role RoleConfig `json:"role,omitempty"`
+	Subject *SubjectConfig `json:"subject,omitempty"`
+	Role *RoleConfig `json:"role,omitempty"`
 }

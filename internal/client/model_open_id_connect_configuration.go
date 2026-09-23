@@ -13,22 +13,22 @@ type OpenIdConnectConfiguration struct {
 	CallbackURLs []string `json:"callbackURLs,omitempty"`
 	AllowedOrigins []string `json:"allowedOrigins,omitempty"`
 	PublicClient bool `json:"publicClient,omitempty"`
-	Pkce OAuth2PkceConfiguration `json:"pkce,omitempty"`
-	AccessToken AccessTokenConfiguration `json:"accessToken,omitempty"`
-	HybridFlow HybridFlowConfiguration `json:"hybridFlow,omitempty"`
-	RefreshToken RefreshTokenConfiguration `json:"refreshToken,omitempty"`
-	SubjectToken SubjectTokenConfiguration `json:"subjectToken,omitempty"`
-	IdToken IdTokenConfiguration `json:"idToken,omitempty"`
-	Logout OidcLogoutConfiguration `json:"logout,omitempty"`
+	Pkce *OAuth2PkceConfiguration `json:"pkce,omitempty"`
+	AccessToken *AccessTokenConfiguration `json:"accessToken,omitempty"`
+	HybridFlow *HybridFlowConfiguration `json:"hybridFlow,omitempty"`
+	RefreshToken *RefreshTokenConfiguration `json:"refreshToken,omitempty"`
+	SubjectToken *SubjectTokenConfiguration `json:"subjectToken,omitempty"`
+	IdToken *IdTokenConfiguration `json:"idToken,omitempty"`
+	Logout *OidcLogoutConfiguration `json:"logout,omitempty"`
 	ValidateRequestObjectSignature bool `json:"validateRequestObjectSignature,omitempty"`
 	ScopeValidators []string `json:"scopeValidators,omitempty"`
-	ClientAuthentication ClientAuthenticationConfiguration `json:"clientAuthentication,omitempty"`
-	RequestObject RequestObjectConfiguration `json:"requestObject,omitempty"`
-	PushAuthorizationRequest PushAuthorizationRequestConfiguration `json:"pushAuthorizationRequest,omitempty"`
-	Subject SubjectConfiguration `json:"subject,omitempty"`
+	ClientAuthentication *ClientAuthenticationConfiguration `json:"clientAuthentication,omitempty"`
+	RequestObject *RequestObjectConfiguration `json:"requestObject,omitempty"`
+	PushAuthorizationRequest *PushAuthorizationRequestConfiguration `json:"pushAuthorizationRequest,omitempty"`
+	Subject *SubjectConfiguration `json:"subject,omitempty"`
 	IsFAPIApplication bool `json:"isFAPIApplication,omitempty"`
-	FapiProfile FapiProfile `json:"fapiProfile,omitempty"`
-	CibaAuthenticationRequest CibaAuthenticationRequestConfiguration `json:"cibaAuthenticationRequest,omitempty"`
-	Issuer AllowedIssuer `json:"issuer,omitempty"`
-	TokenExchange TokenExchangeConfiguration `json:"tokenExchange,omitempty"`
+	FapiProfile *FapiProfile `json:"fapiProfile,omitempty"`
+	CibaAuthenticationRequest *CibaAuthenticationRequestConfiguration `json:"cibaAuthenticationRequest,omitempty"`
+	Issuer *AllowedIssuer `json:"issuer,omitempty"`
+	TokenExchange *TokenExchangeConfiguration `json:"tokenExchange,omitempty"`
 }

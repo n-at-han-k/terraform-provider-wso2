@@ -13,5 +13,5 @@ type ApplicationTemplateModel struct {
 	Category string `json:"category,omitempty"`
 	TemplateGroup string `json:"templateGroup,omitempty"`
 	DisplayOrder int32 `json:"displayOrder,omitempty"`
-	Application ApplicationModel `json:"application,omitempty"`
+	Application *ApplicationModel `json:"application,omitempty"`
 }

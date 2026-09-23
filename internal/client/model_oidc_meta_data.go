@@ -4,25 +4,25 @@ package client
 
 // OidcMetaData - OidcMetaData struct
 type OidcMetaData struct {
-	AllowedGrantTypes GrantTypeMetaData `json:"allowedGrantTypes,omitempty"`
+	AllowedGrantTypes *GrantTypeMetaData `json:"allowedGrantTypes,omitempty"`
 	DefaultUserAccessTokenExpiryTime string `json:"defaultUserAccessTokenExpiryTime,omitempty"`
 	DefaultApplicationAccessTokenExpiryTime string `json:"defaultApplicationAccessTokenExpiryTime,omitempty"`
 	DefaultRefreshTokenExpiryTime string `json:"defaultRefreshTokenExpiryTime,omitempty"`
 	DefaultIdTokenExpiryTime string `json:"defaultIdTokenExpiryTime,omitempty"`
-	IdTokenEncryptionAlgorithm MetadataProperty `json:"idTokenEncryptionAlgorithm,omitempty"`
-	IdTokenEncryptionMethod MetadataProperty `json:"idTokenEncryptionMethod,omitempty"`
-	ScopeValidators MetadataProperty `json:"scopeValidators,omitempty"`
-	AccessTokenType MetadataProperty `json:"accessTokenType,omitempty"`
-	AccessTokenBindingType MetadataProperty `json:"accessTokenBindingType,omitempty"`
-	TokenEndpointAuthMethod ClientAuthenticationMethodMetadata `json:"tokenEndpointAuthMethod,omitempty"`
+	IdTokenEncryptionAlgorithm *MetadataProperty `json:"idTokenEncryptionAlgorithm,omitempty"`
+	IdTokenEncryptionMethod *MetadataProperty `json:"idTokenEncryptionMethod,omitempty"`
+	ScopeValidators *MetadataProperty `json:"scopeValidators,omitempty"`
+	AccessTokenType *MetadataProperty `json:"accessTokenType,omitempty"`
+	AccessTokenBindingType *MetadataProperty `json:"accessTokenBindingType,omitempty"`
+	TokenEndpointAuthMethod *ClientAuthenticationMethodMetadata `json:"tokenEndpointAuthMethod,omitempty"`
 	TokenEndpointAllowReusePvtKeyJwt bool `json:"tokenEndpointAllowReusePvtKeyJwt,omitempty"`
-	TokenEndpointSignatureAlgorithm MetadataProperty `json:"tokenEndpointSignatureAlgorithm,omitempty"`
-	IdTokenSignatureAlgorithm MetadataProperty `json:"idTokenSignatureAlgorithm,omitempty"`
-	RequestObjectSignatureAlgorithm MetadataProperty `json:"requestObjectSignatureAlgorithm,omitempty"`
-	RequestObjectEncryptionAlgorithm MetadataProperty `json:"requestObjectEncryptionAlgorithm,omitempty"`
-	RequestObjectEncryptionMethod MetadataProperty `json:"requestObjectEncryptionMethod,omitempty"`
-	SubjectType MetadataProperty `json:"subjectType,omitempty"`
-	FapiMetadata FapiMetadata `json:"fapiMetadata,omitempty"`
-	CibaMetadata CibaMetadata `json:"cibaMetadata,omitempty"`
+	TokenEndpointSignatureAlgorithm *MetadataProperty `json:"tokenEndpointSignatureAlgorithm,omitempty"`
+	IdTokenSignatureAlgorithm *MetadataProperty `json:"idTokenSignatureAlgorithm,omitempty"`
+	RequestObjectSignatureAlgorithm *MetadataProperty `json:"requestObjectSignatureAlgorithm,omitempty"`
+	RequestObjectEncryptionAlgorithm *MetadataProperty `json:"requestObjectEncryptionAlgorithm,omitempty"`
+	RequestObjectEncryptionMethod *MetadataProperty `json:"requestObjectEncryptionMethod,omitempty"`
+	SubjectType *MetadataProperty `json:"subjectType,omitempty"`
+	FapiMetadata *FapiMetadata `json:"fapiMetadata,omitempty"`
+	CibaMetadata *CibaMetadata `json:"cibaMetadata,omitempty"`
 	AllowedIssuers []AllowedIssuer `json:"allowedIssuers,omitempty"`
 }
