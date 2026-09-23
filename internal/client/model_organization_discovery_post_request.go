@@ -4,6 +4,6 @@ package client
 
 // OrganizationDiscoveryPostRequest - OrganizationDiscoveryPostRequest struct
 type OrganizationDiscoveryPostRequest struct {
-	OrganizationId string `json:"organizationId"`
-	Attributes []DiscoveryAttribute `json:"attributes"`
+	OrganizationId string `json:"organizationId,omitempty"`
+	Attributes []DiscoveryAttribute `json:"attributes,omitempty"`
 }

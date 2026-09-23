@@ -4,8 +4,8 @@ package client
 
 // OrganizationDiscoveryResponse - OrganizationDiscoveryResponse struct
 type OrganizationDiscoveryResponse struct {
-	OrganizationId string `json:"organizationId"`
-	OrganizationName string `json:"organizationName"`
-	OrgHandle string `json:"orgHandle"`
-	Attributes []DiscoveryAttribute `json:"attributes"`
+	OrganizationId string `json:"organizationId,omitempty"`
+	OrganizationName string `json:"organizationName,omitempty"`
+	OrgHandle string `json:"orgHandle,omitempty"`
+	Attributes []DiscoveryAttribute `json:"attributes,omitempty"`
 }

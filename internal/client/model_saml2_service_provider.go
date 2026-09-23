@@ -4,9 +4,9 @@ package client
 
 // Saml2ServiceProvider - Saml2ServiceProvider struct
 type Saml2ServiceProvider struct {
-	Issuer string `json:"issuer"`
+	Issuer string `json:"issuer,omitempty"`
 	ServiceProviderQualifier string `json:"serviceProviderQualifier,omitempty"`
-	AssertionConsumerUrls []string `json:"assertionConsumerUrls"`
+	AssertionConsumerUrls []string `json:"assertionConsumerUrls,omitempty"`
 	DefaultAssertionConsumerUrl string `json:"defaultAssertionConsumerUrl,omitempty"`
 	IdpEntityIdAlias string `json:"idpEntityIdAlias,omitempty"`
 	SingleSignOnProfile SingleSignOnProfile `json:"singleSignOnProfile,omitempty"`

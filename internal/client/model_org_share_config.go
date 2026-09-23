@@ -4,7 +4,7 @@ package client
 
 // OrgShareConfig - OrgShareConfig struct
 type OrgShareConfig struct {
-	OrgId string `json:"orgId"`
-	Policy string `json:"policy"`
-	RoleSharing RoleSharing `json:"roleSharing"`
+	OrgId string `json:"orgId,omitempty"`
+	Policy string `json:"policy,omitempty"`
+	RoleSharing RoleSharing `json:"roleSharing,omitempty"`
 }

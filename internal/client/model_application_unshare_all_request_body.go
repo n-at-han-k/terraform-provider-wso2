@@ -4,5 +4,5 @@ package client
 
 // ApplicationUnshareAllRequestBody - ApplicationUnshareAllRequestBody struct
 type ApplicationUnshareAllRequestBody struct {
-	ApplicationId string `json:"applicationId"`
+	ApplicationId string `json:"applicationId,omitempty"`
 }

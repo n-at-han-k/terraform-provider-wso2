@@ -4,6 +4,6 @@ package client
 
 // WsTrustConfiguration - WsTrustConfiguration struct
 type WsTrustConfiguration struct {
-	Audience string `json:"audience"`
-	CertificateAlias string `json:"certificateAlias"`
+	Audience string `json:"audience,omitempty"`
+	CertificateAlias string `json:"certificateAlias,omitempty"`
 }

@@ -5,6 +5,6 @@ package client
 // Claim - Claim struct
 type Claim struct {
 	Id string `json:"id,omitempty"`
-	Uri string `json:"uri"`
+	Uri string `json:"uri,omitempty"`
 	DisplayName string `json:"displayName,omitempty"`
 }

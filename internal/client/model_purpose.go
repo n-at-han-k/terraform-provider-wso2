@@ -4,6 +4,6 @@ package client
 
 // Purpose - Purpose struct
 type Purpose struct {
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	Attributes []TenantAttribute `json:"attributes,omitempty"`
 }

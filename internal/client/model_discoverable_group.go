@@ -4,6 +4,6 @@ package client
 
 // DiscoverableGroup - DiscoverableGroup struct
 type DiscoverableGroup struct {
-	UserStore string `json:"userStore"`
-	Groups []GroupBasicInfo `json:"groups"`
+	UserStore string `json:"userStore,omitempty"`
+	Groups []GroupBasicInfo `json:"groups,omitempty"`
 }

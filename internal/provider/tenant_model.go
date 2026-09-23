@@ -2,7 +2,11 @@
 package provider
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
@@ -12,31 +16,30 @@ type TenantModel struct {
 	Id types.String `tfsdk:"id"`
 	Name types.String `tfsdk:"name"`
 	Domain types.String `tfsdk:"domain"`
-	Owners types.List `tfsdk:"owners"`
+	Owners jsontypes.Normalized `tfsdk:"owners"`
 	CreatedDate types.String `tfsdk:"created_date"`
-	LifecycleStatus types.String `tfsdk:"lifecycle_status"`
+	LifecycleStatus jsontypes.Normalized `tfsdk:"lifecycle_status"`
 	Region types.String `tfsdk:"region"`
 }
 
 // ToClientModel converts a Terraform model to a client model.
-func (m *TenantModel) ToClientModel() *client.TenantResponseModel {
-	out := &client.TenantResponseModel{}
-	if !m.Id.IsNull() && !m.Id.IsUnknown() {
-		out.Id = m.Id.ValueString()
-	}
+func (m *TenantModel) ToClientModel() (*client.TenantModel, error) {
+	out := &client.TenantModel{}
 	if !m.Name.IsNull() && !m.Name.IsUnknown() {
 		out.Name = m.Name.ValueString()
 	}
 	if !m.Domain.IsNull() && !m.Domain.IsUnknown() {
 		out.Domain = m.Domain.ValueString()
 	}
-	if !m.CreatedDate.IsNull() && !m.CreatedDate.IsUnknown() {
-		out.CreatedDate = m.CreatedDate.ValueString()
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.Owners.IsNull() && !m.Owners.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Owners.ValueString()), &out.Owners); err != nil {
+			return out, fmt.Errorf("owners: %w", err)
+		}
 	}
-	if !m.Region.IsNull() && !m.Region.IsUnknown() {
-		out.Region = m.Region.ValueString()
-	}
-	return out
+	return out, nil
 }
 
 // FromClientModel updates the Terraform model from a client model.
@@ -45,5 +48,10 @@ func (m *TenantModel) FromClientModel(c *client.TenantResponseModel) {
 	m.Name = types.StringValue(c.Name)
 	m.Domain = types.StringValue(c.Domain)
 	m.CreatedDate = types.StringValue(c.CreatedDate)
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.LifecycleStatus); err == nil {
+		m.LifecycleStatus = jsontypes.NewNormalizedValue(string(encoded))
+	}
 	m.Region = types.StringValue(c.Region)
 }

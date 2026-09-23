@@ -4,6 +4,6 @@ package client
 
 // ApplicationSharingPatchRequest - ApplicationSharingPatchRequest struct
 type ApplicationSharingPatchRequest struct {
-	ApplicationId string `json:"applicationId"`
-	Operations []ApplicationSharingPatchOperation `json:"Operations"`
+	ApplicationId string `json:"applicationId,omitempty"`
+	Operations []ApplicationSharingPatchOperation `json:"Operations,omitempty"`
 }

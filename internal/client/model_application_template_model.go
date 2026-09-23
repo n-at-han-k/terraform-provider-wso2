@@ -5,7 +5,7 @@ package client
 // ApplicationTemplateModel - ApplicationTemplateModel struct
 type ApplicationTemplateModel struct {
 	Id string `json:"id,omitempty"`
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
 	Image string `json:"image,omitempty"`
 	AuthenticationProtocol string `json:"authenticationProtocol,omitempty"`
@@ -13,5 +13,5 @@ type ApplicationTemplateModel struct {
 	Category string `json:"category,omitempty"`
 	TemplateGroup string `json:"templateGroup,omitempty"`
 	DisplayOrder int32 `json:"displayOrder,omitempty"`
-	Application ApplicationModel `json:"application"`
+	Application ApplicationModel `json:"application,omitempty"`
 }

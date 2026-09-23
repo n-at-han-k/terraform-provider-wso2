@@ -4,14 +4,14 @@ package client
 
 // ApplicationBasicOrganizationResponse - ApplicationBasicOrganizationResponse struct
 type ApplicationBasicOrganizationResponse struct {
-	Id string `json:"id"`
-	Name string `json:"name"`
-	OrgHandle string `json:"orgHandle"`
-	ParentId string `json:"parentId"`
-	Status string `json:"status"`
-	Ref string `json:"ref"`
-	HasChildren bool `json:"hasChildren"`
-	DepthFromRoot int32 `json:"depthFromRoot"`
+	Id string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+	OrgHandle string `json:"orgHandle,omitempty"`
+	ParentId string `json:"parentId,omitempty"`
+	Status string `json:"status,omitempty"`
+	Ref string `json:"ref,omitempty"`
+	HasChildren bool `json:"hasChildren,omitempty"`
+	DepthFromRoot int32 `json:"depthFromRoot,omitempty"`
 	SharingMode SharingMode `json:"sharingMode,omitempty"`
-	Roles []RoleShareConfig `json:"roles"`
+	Roles []RoleShareConfig `json:"roles,omitempty"`
 }

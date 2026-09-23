@@ -2,10 +2,14 @@ package wso2;
 
 import io.swagger.v3.oas.models.Operation;
 import org.openapitools.codegen.CliOption;
+import org.openapitools.codegen.CodegenModel;
 import org.openapitools.codegen.CodegenOperation;
+import org.openapitools.codegen.CodegenProperty;
 import org.openapitools.codegen.SupportingFile;
 import org.openapitools.codegen.languages.TerraformProviderCodegen;
 import org.openapitools.codegen.model.ModelMap;
+import org.openapitools.codegen.model.ModelsMap;
+import org.openapitools.codegen.model.OperationMap;
 import org.openapitools.codegen.model.OperationsMap;
 
 import java.io.File;
@@ -14,6 +18,9 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -137,7 +144,199 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             }
         }
 
-        return super.postProcessOperationsWithModels(objs, allModels);
+        OperationsMap processed = super.postProcessOperationsWithModels(objs, allModels);
+
+        reshapeAttributes(processed.getOperations(), allModels);
+
+        return processed;
+    }
+
+    /**
+     * Upstream builds the resource schema out of the READ response model, and
+     * then sends that same model back as the create body. Three things go
+     * wrong, and all three are fatal to actually declaring a resource:
+     *
+     * The response model says every property the server always answers is
+     * `required` and nothing is readOnly unless the document says so -- and
+     * the WSO2 documents never say so. `wso2_organization` came out demanding
+     * `id`, `status`, `version`, `created` and `last_modified` in
+     * configuration, values the server assigns.
+     *
+     * A property the create body takes and the response model does not have is
+     * missing from the schema entirely. A tenant's owner carries a `password`,
+     * which no response ever echoes back, so there was no way to spell the one
+     * field a tenant cannot be created without.
+     *
+     * And anything that is not a scalar is declared -- an object as a string,
+     * a list as `ListAttribute{ElementType: types.StringType}` -- and then
+     * converted NEITHER way. The field reached the schema and the model struct
+     * and was silently never sent or read, which is where an organization's
+     * `attributes` and a tenant's `owners` went.
+     *
+     * So the create request body is what decides what a person may write, the
+     * response decides what is computed, and the schema is the union. Anything
+     * not a scalar becomes a JSON string, which the templates do convert.
+     */
+    private void reshapeAttributes(OperationMap operations, List<ModelMap> allModels) {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> attributes =
+                (List<Map<String, Object>>) operations.get("tfAttributes");
+
+        if (attributes == null) {
+            return;
+        }
+
+        CodegenModel request = modelNamed(allModels, (String) operations.get("requestModel"));
+        Map<String, CodegenProperty> writable = new LinkedHashMap<>();
+
+        if (request != null) {
+            for (CodegenProperty property : request.vars) {
+                writable.put(property.baseName.toLowerCase(Locale.ROOT), property);
+            }
+        }
+
+        Set<String> answered = new HashSet<>();
+
+        for (Map<String, Object> attribute : attributes) {
+            String name = String.valueOf(attribute.get("name")).toLowerCase(Locale.ROOT);
+            answered.add(name);
+            CodegenProperty writes = writable.get(name);
+
+            // With no create operation there is nothing to infer from, and
+            // upstream's answer stands.
+            if (request != null) {
+                attribute.put("isRequired", writes != null && writes.required);
+                attribute.put("isOptional", writes != null && !writes.required);
+                attribute.put("isComputed", writes == null);
+            }
+
+            // The server answers this one, so state can be refreshed from it --
+            // unless the create body spells it differently, as a tenant's
+            // owners are `Owner` going out (with a password) and `OwnerResponse`
+            // coming back (without). Reading that back would drop the password
+            // out of state and diff forever.
+            boolean sameShape = writes == null
+                    || writes.dataType.equals(String.valueOf(attribute.get("goType")));
+            attribute.put("inRequest", writes != null);
+            attribute.put("readBack", sameShape);
+
+            retype(attribute);
+        }
+
+        // What the create body takes and no response ever answers.
+        for (Map.Entry<String, CodegenProperty> entry : writable.entrySet()) {
+            if (answered.contains(entry.getKey())) {
+                continue;
+            }
+            attributes.add(writeOnlyAttribute(entry.getValue()));
+        }
+
+        boolean anyJson = attributes.stream()
+                .anyMatch(attribute -> Boolean.TRUE.equals(attribute.get("isJson")));
+
+        // Nothing is a types.List any more, so the import that served them is
+        // not needed and the JSON one is.
+        operations.put("hasListAttributes", false);
+        operations.put("hasJsonAttributes", anyJson);
+    }
+
+    /** A list or an object travels as JSON; the templates convert those. */
+    private void retype(Map<String, Object> attribute) {
+        if (!Boolean.TRUE.equals(attribute.get("isList"))
+                && !Boolean.TRUE.equals(attribute.get("isObject"))) {
+            return;
+        }
+
+        attribute.put("isList", false);
+        attribute.put("isObject", false);
+        attribute.put("isJson", true);
+        attribute.put("terraformType", "jsontypes.Normalized");
+        attribute.put("terraformAttrType", "schema.StringAttribute");
+    }
+
+    private Map<String, Object> writeOnlyAttribute(CodegenProperty property) {
+        Map<String, Object> attribute = new HashMap<>();
+
+        attribute.put("name", property.baseName);
+        attribute.put("terraformName", underscore(property.baseName).toLowerCase(Locale.ROOT));
+        attribute.put("goName", camelize(property.baseName));
+        attribute.put("goType", property.dataType);
+        attribute.put("description", property.description != null ? property.description : "");
+        attribute.put("isRequired", property.required);
+        attribute.put("isOptional", !property.required);
+        attribute.put("isComputed", false);
+        attribute.put("inRequest", true);
+        // Nothing answers it, so there is nothing to read back.
+        attribute.put("readBack", false);
+        attribute.put("isString", "string".equals(property.dataType));
+        attribute.put("isInt64", "int64".equals(property.dataType) || "int32".equals(property.dataType));
+        attribute.put("isFloat64", "float64".equals(property.dataType) || "float32".equals(property.dataType));
+        attribute.put("isBool", "bool".equals(property.dataType));
+        attribute.put("isList", property.isArray);
+        attribute.put("isObject", property.isModel && !property.isArray);
+        // ponytail: a name-based guess at what is secret. A document that says
+        // writeOnly or x-terraform-sensitive is believed first; this catches the
+        // ones that say neither, and WSO2's tenant owner password says neither.
+        attribute.put("isSensitive", property.isWriteOnly
+                || property.baseName.toLowerCase(Locale.ROOT).contains("password")
+                || property.baseName.toLowerCase(Locale.ROOT).contains("secret"));
+        attribute.put("terraformType", goType(property.dataType));
+        attribute.put("terraformAttrType", goAttrType(property.dataType));
+
+        retype(attribute);
+
+        return attribute;
+    }
+
+    private String goType(String dataType) {
+        switch (dataType == null ? "" : dataType) {
+            case "int32": case "int64": case "int": return "types.Int64";
+            case "float32": case "float64": return "types.Float64";
+            case "bool": return "types.Bool";
+            default: return "types.String";
+        }
+    }
+
+    private String goAttrType(String dataType) {
+        switch (dataType == null ? "" : dataType) {
+            case "int32": case "int64": case "int": return "schema.Int64Attribute";
+            case "float32": case "float64": return "schema.Float64Attribute";
+            case "bool": return "schema.BoolAttribute";
+            default: return "schema.StringAttribute";
+        }
+    }
+
+    private CodegenModel modelNamed(List<ModelMap> allModels, String classname) {
+        if (classname == null) {
+            return null;
+        }
+        for (ModelMap map : allModels) {
+            if (classname.equals(map.getModel().classname)) {
+                return map.getModel();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Every field omitempty, because the resource sends the RESPONSE model as a
+     * create body. A property the server assigns is Computed and therefore null
+     * in the plan, which reaches Go as a zero value -- and without omitempty
+     * that goes out as `"status": ""`, a field the create endpoint never asked
+     * for and can refuse over.
+     */
+    @Override
+    public ModelsMap postProcessModels(ModelsMap objs) {
+        ModelsMap processed = super.postProcessModels(objs);
+
+        for (ModelMap map : processed.getModels()) {
+            for (CodegenProperty property : map.getModel().vars) {
+                property.vendorExtensions.put("x-go-datatag",
+                        " `json:\"" + property.baseName + ",omitempty\"`");
+            }
+        }
+
+        return processed;
     }
 
     /** {@code /organizations} -> {@code Organization}, which upstream reads as the resource name. */

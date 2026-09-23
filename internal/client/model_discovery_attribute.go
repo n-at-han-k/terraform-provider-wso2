@@ -4,6 +4,6 @@ package client
 
 // DiscoveryAttribute - DiscoveryAttribute struct
 type DiscoveryAttribute struct {
-	Type string `json:"type"`
+	Type string `json:"type,omitempty"`
 	Values []string `json:"values,omitempty"`
 }

@@ -2,7 +2,11 @@
 package provider
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
@@ -25,18 +29,19 @@ type ApplicationModel struct {
 	IsB2BSelfServiceApp types.Bool `tfsdk:"is_b2_b_self_service_app"`
 	EnhancedOrgAuthenticationEnabled types.Bool `tfsdk:"enhanced_org_authentication_enabled"`
 	ApplicationEnabled types.Bool `tfsdk:"application_enabled"`
-	AssociatedRoles types.String `tfsdk:"associated_roles"`
-	ClaimConfiguration types.String `tfsdk:"claim_configuration"`
-	InboundProtocols types.List `tfsdk:"inbound_protocols"`
-	AuthenticationSequence types.String `tfsdk:"authentication_sequence"`
-	AdvancedConfigurations types.String `tfsdk:"advanced_configurations"`
-	ProvisioningConfigurations types.String `tfsdk:"provisioning_configurations"`
+	AssociatedRoles jsontypes.Normalized `tfsdk:"associated_roles"`
+	ClaimConfiguration jsontypes.Normalized `tfsdk:"claim_configuration"`
+	InboundProtocols jsontypes.Normalized `tfsdk:"inbound_protocols"`
+	AuthenticationSequence jsontypes.Normalized `tfsdk:"authentication_sequence"`
+	AdvancedConfigurations jsontypes.Normalized `tfsdk:"advanced_configurations"`
+	ProvisioningConfigurations jsontypes.Normalized `tfsdk:"provisioning_configurations"`
 	Access types.String `tfsdk:"access"`
+	InboundProtocolConfiguration jsontypes.Normalized `tfsdk:"inbound_protocol_configuration"`
 }
 
 // ToClientModel converts a Terraform model to a client model.
-func (m *ApplicationModel) ToClientModel() *client.ApplicationResponseModel {
-	out := &client.ApplicationResponseModel{}
+func (m *ApplicationModel) ToClientModel() (*client.ApplicationModel, error) {
+	out := &client.ApplicationModel{}
 	if !m.Id.IsNull() && !m.Id.IsUnknown() {
 		out.Id = m.Id.ValueString()
 	}
@@ -46,9 +51,6 @@ func (m *ApplicationModel) ToClientModel() *client.ApplicationResponseModel {
 	if !m.Description.IsNull() && !m.Description.IsUnknown() {
 		out.Description = m.Description.ValueString()
 	}
-	if !m.ApplicationVersion.IsNull() && !m.ApplicationVersion.IsUnknown() {
-		out.ApplicationVersion = m.ApplicationVersion.ValueString()
-	}
 	if !m.ImageUrl.IsNull() && !m.ImageUrl.IsUnknown() {
 		out.ImageUrl = m.ImageUrl.ValueString()
 	}
@@ -57,15 +59,6 @@ func (m *ApplicationModel) ToClientModel() *client.ApplicationResponseModel {
 	}
 	if !m.LogoutReturnUrl.IsNull() && !m.LogoutReturnUrl.IsUnknown() {
 		out.LogoutReturnUrl = m.LogoutReturnUrl.ValueString()
-	}
-	if !m.ClientId.IsNull() && !m.ClientId.IsUnknown() {
-		out.ClientId = m.ClientId.ValueString()
-	}
-	if !m.Issuer.IsNull() && !m.Issuer.IsUnknown() {
-		out.Issuer = m.Issuer.ValueString()
-	}
-	if !m.Realm.IsNull() && !m.Realm.IsUnknown() {
-		out.Realm = m.Realm.ValueString()
 	}
 	if !m.TemplateId.IsNull() && !m.TemplateId.IsUnknown() {
 		out.TemplateId = m.TemplateId.ValueString()
@@ -85,10 +78,55 @@ func (m *ApplicationModel) ToClientModel() *client.ApplicationResponseModel {
 	if !m.ApplicationEnabled.IsNull() && !m.ApplicationEnabled.IsUnknown() {
 		out.ApplicationEnabled = m.ApplicationEnabled.ValueBool()
 	}
-	if !m.Access.IsNull() && !m.Access.IsUnknown() {
-		out.Access = m.Access.ValueString()
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.AssociatedRoles.IsNull() && !m.AssociatedRoles.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.AssociatedRoles.ValueString()), &out.AssociatedRoles); err != nil {
+			return out, fmt.Errorf("associated_roles: %w", err)
+		}
 	}
-	return out
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.ClaimConfiguration.IsNull() && !m.ClaimConfiguration.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.ClaimConfiguration.ValueString()), &out.ClaimConfiguration); err != nil {
+			return out, fmt.Errorf("claim_configuration: %w", err)
+		}
+	}
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.AuthenticationSequence.IsNull() && !m.AuthenticationSequence.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.AuthenticationSequence.ValueString()), &out.AuthenticationSequence); err != nil {
+			return out, fmt.Errorf("authentication_sequence: %w", err)
+		}
+	}
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.AdvancedConfigurations.IsNull() && !m.AdvancedConfigurations.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.AdvancedConfigurations.ValueString()), &out.AdvancedConfigurations); err != nil {
+			return out, fmt.Errorf("advanced_configurations: %w", err)
+		}
+	}
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.ProvisioningConfigurations.IsNull() && !m.ProvisioningConfigurations.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.ProvisioningConfigurations.ValueString()), &out.ProvisioningConfigurations); err != nil {
+			return out, fmt.Errorf("provisioning_configurations: %w", err)
+		}
+	}
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.InboundProtocolConfiguration.IsNull() && !m.InboundProtocolConfiguration.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.InboundProtocolConfiguration.ValueString()), &out.InboundProtocolConfiguration); err != nil {
+			return out, fmt.Errorf("inbound_protocol_configuration: %w", err)
+		}
+	}
+	return out, nil
 }
 
 // FromClientModel updates the Terraform model from a client model.
@@ -109,5 +147,35 @@ func (m *ApplicationModel) FromClientModel(c *client.ApplicationResponseModel) {
 	m.IsB2BSelfServiceApp = types.BoolValue(c.IsB2BSelfServiceApp)
 	m.EnhancedOrgAuthenticationEnabled = types.BoolValue(c.EnhancedOrgAuthenticationEnabled)
 	m.ApplicationEnabled = types.BoolValue(c.ApplicationEnabled)
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.AssociatedRoles); err == nil {
+		m.AssociatedRoles = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.ClaimConfiguration); err == nil {
+		m.ClaimConfiguration = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.InboundProtocols); err == nil {
+		m.InboundProtocols = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.AuthenticationSequence); err == nil {
+		m.AuthenticationSequence = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.AdvancedConfigurations); err == nil {
+		m.AdvancedConfigurations = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.ProvisioningConfigurations); err == nil {
+		m.ProvisioningConfigurations = jsontypes.NewNormalizedValue(string(encoded))
+	}
 	m.Access = types.StringValue(c.Access)
 }

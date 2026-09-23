@@ -4,9 +4,9 @@ package client
 
 // OrganizationPutRequest - OrganizationPutRequest struct
 type OrganizationPutRequest struct {
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
-	Status string `json:"status"`
+	Status string `json:"status,omitempty"`
 	Version string `json:"version,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 }

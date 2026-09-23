@@ -6,6 +6,7 @@ toolchain go1.24.4
 
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.17.0
+	github.com/hashicorp/terraform-plugin-framework-jsontypes v0.2.0
 	github.com/hashicorp/terraform-plugin-log v0.10.0
 )
 

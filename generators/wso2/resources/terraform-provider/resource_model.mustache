@@ -1,0 +1,102 @@
+{{!
+    Upstream's template, with the non-scalar attributes made to work: it
+    declares them and never converts them, so an organization's `attributes`
+    and a tenant's `owners` reached the schema and the struct and were silently
+    never sent or read. Here they are JSON, and ToClientModel can fail.
+}}
+{{#operations}}
+{{>partial_header}}
+package provider
+
+{{#responseModel}}
+import (
+{{#hasJsonAttributes}}
+	"encoding/json"
+	"fmt"
+
+{{/hasJsonAttributes}}
+	"github.com/hashicorp/terraform-plugin-framework/types"
+{{#hasJsonAttributes}}
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+{{/hasJsonAttributes}}
+
+	"{{gitHost}}/{{gitUserId}}/{{gitRepoId}}/internal/client"
+)
+{{/responseModel}}
+
+// {{resourceClassName}}Model is the Terraform model for {{resourceName}}.
+type {{resourceClassName}}Model struct {
+{{#tfAttributes}}
+	{{goName}} {{terraformType}} `tfsdk:"{{terraformName}}"`
+{{/tfAttributes}}
+}
+
+{{#responseModel}}
+// ToClientModel converts a Terraform model to a client model.
+func (m *{{resourceClassName}}Model) ToClientModel() (*client.{{requestModel}}, error) {
+	out := &client.{{requestModel}}{}
+{{#tfAttributes}}
+{{#inRequest}}
+{{#isString}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = m.{{goName}}.ValueString()
+	}
+{{/isString}}
+{{#isInt64}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = {{goType}}(m.{{goName}}.ValueInt64())
+	}
+{{/isInt64}}
+{{#isFloat64}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = {{goType}}(m.{{goName}}.ValueFloat64())
+	}
+{{/isFloat64}}
+{{#isBool}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = m.{{goName}}.ValueBool()
+	}
+{{/isBool}}
+{{#isJson}}
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.{{goName}}.ValueString()), &out.{{goName}}); err != nil {
+			return out, fmt.Errorf("{{terraformName}}: %w", err)
+		}
+	}
+{{/isJson}}
+{{/inRequest}}
+{{/tfAttributes}}
+	return out, nil
+}
+
+// FromClientModel updates the Terraform model from a client model.
+func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}) {
+{{#tfAttributes}}
+{{#readBack}}
+{{#isString}}
+	m.{{goName}} = types.StringValue(c.{{goName}})
+{{/isString}}
+{{#isInt64}}
+	m.{{goName}} = types.Int64Value(int64(c.{{goName}}))
+{{/isInt64}}
+{{#isFloat64}}
+	m.{{goName}} = types.Float64Value(float64(c.{{goName}}))
+{{/isFloat64}}
+{{#isBool}}
+	m.{{goName}} = types.BoolValue(c.{{goName}})
+{{/isBool}}
+{{#isJson}}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.{{goName}}); err == nil {
+		m.{{goName}} = jsontypes.NewNormalizedValue(string(encoded))
+	}
+{{/isJson}}
+{{/readBack}}
+{{/tfAttributes}}
+}
+{{/responseModel}}
+{{/operations}}

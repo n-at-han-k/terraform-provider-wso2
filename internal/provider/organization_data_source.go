@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
@@ -32,7 +33,7 @@ func (d *OrganizationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 		Description: "Fetches a organization data source.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"name": schema.StringAttribute{
@@ -40,7 +41,7 @@ func (d *OrganizationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				Description: "",
 			},
 			"org_handle": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"description": schema.StringAttribute{
@@ -48,23 +49,23 @@ func (d *OrganizationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				Description: "",
 			},
 			"status": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"version": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"created": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"last_modified": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"type": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"has_children": schema.BoolAttribute{
@@ -72,20 +73,28 @@ func (d *OrganizationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				Description: "",
 			},
 			"parent": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"attributes": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"permissions": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"ancestor_path": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "Ancestors up to the request initiated organization",
+			},
+			"parent_id": schema.StringAttribute{
+				Computed:    true,
+				Description: "If the parentId is not present, Super will be taken as the parent organization.",
 			},
 		},
 	}

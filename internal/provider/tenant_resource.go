@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 
@@ -39,7 +40,7 @@ func (r *TenantResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 		Description: "Manages a tenant resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Optional:    true,
+				Computed:    true,
 				Description: "tenant id of the tenant owner.",
 			},
 			"name": schema.StringAttribute{
@@ -47,12 +48,12 @@ func (r *TenantResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Description: "Name of the tenant.",
 			},
 			"domain": schema.StringAttribute{
-				Optional:    true,
+				Required:    true,
 				Description: "Tenant domain of the tenant.",
 			},
-			"owners": schema.ListAttribute{
-				Optional:    true,
-				ElementType: types.StringType,
+			"owners": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
+				Required:    true,
 				Description: "",
 			},
 			"created_date": schema.StringAttribute{
@@ -60,7 +61,8 @@ func (r *TenantResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Description: "Tenant created time in ISO-8601 format.",
 			},
 			"lifecycle_status": schema.StringAttribute{
-				Optional:    true,
+				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Description: "",
 			},
 			"region": schema.StringAttribute{
@@ -96,21 +98,40 @@ func (r *TenantResource) Create(ctx context.Context, req resource.CreateRequest,
 		return
 	}
 
-	reqBody := plan.ToClientModel()
+	reqBody, err := plan.ToClientModel()
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid tenant configuration", err.Error())
+		return
+	}
 
-	respBody, err := r.client.DoRequest(ctx, "POST", "/tenants", reqBody)
+	respBody, location, err := r.client.DoCreateRequest(ctx, "POST", "/tenants", reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating tenant", err.Error())
 		return
 	}
 
-	var result client.TenantResponseModel
-	if err := json.Unmarshal(respBody, &result); err != nil {
-		resp.Diagnostics.AddError("Error parsing response", err.Error())
-		return
+	// A create that answers 201 with nothing but a Location header -- WSO2 does
+	// this for tenants and applications. The identifier is in that header, and
+	// everything else the server assigned has to be fetched.
+	if len(respBody) == 0 {
+		plan.Id = types.StringValue(client.IDFromLocation(location))
+
+		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/tenants/%v", plan.Id.ValueString()), nil)
+		if err != nil {
+			resp.Diagnostics.AddError("Error reading back the created tenant", err.Error())
+			return
+		}
 	}
 
-	plan.FromClientModel(&result)
+	if len(respBody) > 0 {
+		var result client.TenantResponseModel
+		if err := json.Unmarshal(respBody, &result); err != nil {
+			resp.Diagnostics.AddError("Error parsing response", err.Error())
+			return
+		}
+
+		plan.FromClientModel(&result)
+	}
 
 	tflog.Trace(ctx, "created tenant resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)

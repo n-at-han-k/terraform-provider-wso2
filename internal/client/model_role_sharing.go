@@ -4,6 +4,6 @@ package client
 
 // RoleSharing - - ALL => share all roles - NONE => share no roles - SELECTED => provide a list of specific roles
 type RoleSharing struct {
-	Mode string `json:"mode"`
+	Mode string `json:"mode,omitempty"`
 	Roles []RoleShareConfig `json:"roles,omitempty"`
 }

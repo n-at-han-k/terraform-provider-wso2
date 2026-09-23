@@ -4,6 +4,6 @@ package client
 
 // ApplicationUnshareSelectedRequestBody - ApplicationUnshareSelectedRequestBody struct
 type ApplicationUnshareSelectedRequestBody struct {
-	ApplicationId string `json:"applicationId"`
-	OrgIds []string `json:"orgIds"`
+	ApplicationId string `json:"applicationId,omitempty"`
+	OrgIds []string `json:"orgIds,omitempty"`
 }

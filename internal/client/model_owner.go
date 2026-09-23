@@ -4,11 +4,11 @@ package client
 
 // Owner - Owner struct
 type Owner struct {
-	Username string `json:"username"`
+	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
-	Email string `json:"email"`
+	Email string `json:"email,omitempty"`
 	Firstname string `json:"firstname,omitempty"`
 	Lastname string `json:"lastname,omitempty"`
-	ProvisioningMethod string `json:"provisioningMethod"`
+	ProvisioningMethod string `json:"provisioningMethod,omitempty"`
 	AdditionalClaims []AdditionalClaims `json:"additionalClaims,omitempty"`
 }

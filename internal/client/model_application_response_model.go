@@ -5,7 +5,7 @@ package client
 // ApplicationResponseModel - ApplicationResponseModel struct
 type ApplicationResponseModel struct {
 	Id string `json:"id,omitempty"`
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
 	ApplicationVersion string `json:"applicationVersion,omitempty"`
 	ImageUrl string `json:"imageUrl,omitempty"`

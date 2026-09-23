@@ -5,8 +5,8 @@ package client
 // ChannelVerifiedTenantModel - ChannelVerifiedTenantModel struct
 type ChannelVerifiedTenantModel struct {
 	Name string `json:"name,omitempty"`
-	Domain string `json:"domain"`
-	Code string `json:"code"`
+	Domain string `json:"domain,omitempty"`
+	Code string `json:"code,omitempty"`
 	Purpose Purpose `json:"purpose,omitempty"`
-	Owners []Owner `json:"owners"`
+	Owners []Owner `json:"owners,omitempty"`
 }

@@ -4,6 +4,6 @@ package client
 
 // AssociatedRolesConfig - AssociatedRolesConfig struct
 type AssociatedRolesConfig struct {
-	AllowedAudience string `json:"allowedAudience"`
+	AllowedAudience string `json:"allowedAudience,omitempty"`
 	Roles []Role `json:"roles,omitempty"`
 }

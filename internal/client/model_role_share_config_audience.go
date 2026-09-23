@@ -4,6 +4,6 @@ package client
 
 // RoleShareConfigAudience - RoleShareConfigAudience struct
 type RoleShareConfigAudience struct {
-	Display string `json:"display"`
-	Type string `json:"type"`
+	Display string `json:"display,omitempty"`
+	Type string `json:"type,omitempty"`
 }

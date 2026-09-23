@@ -4,8 +4,8 @@ package client
 
 // OrganizationError - OrganizationError struct
 type OrganizationError struct {
-	Code string `json:"code"`
-	Message string `json:"message"`
+	Code string `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 	Description string `json:"description,omitempty"`
 	TraceId string `json:"traceId,omitempty"`
 }

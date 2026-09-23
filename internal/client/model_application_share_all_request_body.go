@@ -4,7 +4,7 @@ package client
 
 // ApplicationShareAllRequestBody - ApplicationShareAllRequestBody struct
 type ApplicationShareAllRequestBody struct {
-	ApplicationId string `json:"applicationId"`
-	Policy string `json:"policy"`
-	RoleSharing RoleSharing `json:"roleSharing"`
+	ApplicationId string `json:"applicationId,omitempty"`
+	Policy string `json:"policy,omitempty"`
+	RoleSharing RoleSharing `json:"roleSharing,omitempty"`
 }

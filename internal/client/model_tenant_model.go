@@ -5,6 +5,6 @@ package client
 // TenantModel - TenantModel struct
 type TenantModel struct {
 	Name string `json:"name,omitempty"`
-	Domain string `json:"domain"`
-	Owners []Owner `json:"owners"`
+	Domain string `json:"domain,omitempty"`
+	Owners []Owner `json:"owners,omitempty"`
 }

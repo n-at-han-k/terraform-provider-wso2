@@ -4,6 +4,6 @@ package client
 
 // Role - Role struct
 type Role struct {
-	Id string `json:"id"`
+	Id string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }

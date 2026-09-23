@@ -4,15 +4,15 @@ package client
 
 // OrganizationMetadata - OrganizationMetadata struct
 type OrganizationMetadata struct {
-	Id string `json:"id"`
-	Name string `json:"name"`
-	OrgHandle string `json:"orgHandle"`
+	Id string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+	OrgHandle string `json:"orgHandle,omitempty"`
 	Description string `json:"description,omitempty"`
-	Status string `json:"status"`
-	Version string `json:"version"`
-	Created string `json:"created"`
-	LastModified string `json:"lastModified"`
-	Type string `json:"type"`
+	Status string `json:"status,omitempty"`
+	Version string `json:"version,omitempty"`
+	Created string `json:"created,omitempty"`
+	LastModified string `json:"lastModified,omitempty"`
+	Type string `json:"type,omitempty"`
 	Parent ParentOrganization `json:"parent,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 	Permissions []string `json:"permissions,omitempty"`

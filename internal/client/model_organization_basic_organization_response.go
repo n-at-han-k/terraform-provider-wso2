@@ -4,12 +4,12 @@ package client
 
 // OrganizationBasicOrganizationResponse - OrganizationBasicOrganizationResponse struct
 type OrganizationBasicOrganizationResponse struct {
-	Id string `json:"id"`
-	Name string `json:"name"`
-	OrgHandle string `json:"orgHandle"`
-	Status string `json:"status"`
-	Version string `json:"version"`
+	Id string `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+	OrgHandle string `json:"orgHandle,omitempty"`
+	Status string `json:"status,omitempty"`
+	Version string `json:"version,omitempty"`
 	HasChildren bool `json:"hasChildren,omitempty"`
-	Ref string `json:"ref"`
+	Ref string `json:"ref,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 }

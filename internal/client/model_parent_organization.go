@@ -4,6 +4,6 @@ package client
 
 // ParentOrganization - ParentOrganization struct
 type ParentOrganization struct {
-	Id string `json:"id"`
-	Ref string `json:"ref"`
+	Id string `json:"id,omitempty"`
+	Ref string `json:"ref,omitempty"`
 }

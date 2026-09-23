@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
@@ -96,30 +97,41 @@ func (d *ApplicationDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				Description: "Decides whether the application is enabled.",
 			},
 			"associated_roles": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"claim_configuration": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"inbound_protocols": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"authentication_sequence": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"advanced_configurations": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"provisioning_configurations": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},
 			"access": schema.StringAttribute{
+				Computed:    true,
+				Description: "",
+			},
+			"inbound_protocol_configuration": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},

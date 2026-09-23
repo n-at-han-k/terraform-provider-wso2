@@ -4,6 +4,6 @@ package client
 
 // AuthenticationStepModel - AuthenticationStepModel struct
 type AuthenticationStepModel struct {
-	Id int32 `json:"id"`
-	Options []Authenticator `json:"options"`
+	Id int32 `json:"id,omitempty"`
+	Options []Authenticator `json:"options,omitempty"`
 }

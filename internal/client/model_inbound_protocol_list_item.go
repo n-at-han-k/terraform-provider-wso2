@@ -4,7 +4,7 @@ package client
 
 // InboundProtocolListItem - InboundProtocolListItem struct
 type InboundProtocolListItem struct {
-	Type string `json:"type"`
-	Name string `json:"name"`
-	Self string `json:"self"`
+	Type string `json:"type,omitempty"`
+	Name string `json:"name,omitempty"`
+	Self string `json:"self,omitempty"`
 }

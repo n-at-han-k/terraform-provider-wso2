@@ -9,7 +9,7 @@ type OpenIdConnectConfiguration struct {
 	ClientSecretExpiresAt int64 `json:"clientSecretExpiresAt,omitempty"`
 	MultipleClientSecretsConfigured bool `json:"multipleClientSecretsConfigured,omitempty"`
 	State string `json:"state,omitempty"`
-	GrantTypes []string `json:"grantTypes"`
+	GrantTypes []string `json:"grantTypes,omitempty"`
 	CallbackURLs []string `json:"callbackURLs,omitempty"`
 	AllowedOrigins []string `json:"allowedOrigins,omitempty"`
 	PublicClient bool `json:"publicClient,omitempty"`

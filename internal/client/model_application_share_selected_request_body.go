@@ -4,6 +4,6 @@ package client
 
 // ApplicationShareSelectedRequestBody - ApplicationShareSelectedRequestBody struct
 type ApplicationShareSelectedRequestBody struct {
-	ApplicationId string `json:"applicationId"`
-	Organizations []OrgShareConfig `json:"organizations"`
+	ApplicationId string `json:"applicationId,omitempty"`
+	Organizations []OrgShareConfig `json:"organizations,omitempty"`
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
@@ -40,11 +41,12 @@ func (d *TenantDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Description: "Name of the tenant.",
 			},
 			"domain": schema.StringAttribute{
-				Computed:    true,
+				Required:    true,
 				Description: "Tenant domain of the tenant.",
 			},
 			"owners": schema.StringAttribute{
-				Computed:    true,
+				CustomType:  jsontypes.NormalizedType{},
+				Required:    true,
 				Description: "",
 			},
 			"created_date": schema.StringAttribute{
@@ -52,6 +54,7 @@ func (d *TenantDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 				Description: "Tenant created time in ISO-8601 format.",
 			},
 			"lifecycle_status": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
 			},

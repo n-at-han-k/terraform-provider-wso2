@@ -4,5 +4,5 @@ package client
 
 // OrganizationDiscoveryAttributes - OrganizationDiscoveryAttributes struct
 type OrganizationDiscoveryAttributes struct {
-	Attributes []DiscoveryAttribute `json:"attributes"`
+	Attributes []DiscoveryAttribute `json:"attributes,omitempty"`
 }

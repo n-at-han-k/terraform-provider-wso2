@@ -4,5 +4,5 @@ package client
 
 // ScriptUpdateModel - ScriptUpdateModel struct
 type ScriptUpdateModel struct {
-	Script string `json:"script"`
+	Script string `json:"script,omitempty"`
 }

@@ -2,7 +2,11 @@
 package provider
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
@@ -19,18 +23,16 @@ type OrganizationModel struct {
 	LastModified types.String `tfsdk:"last_modified"`
 	Type types.String `tfsdk:"type"`
 	HasChildren types.Bool `tfsdk:"has_children"`
-	Parent types.String `tfsdk:"parent"`
-	Attributes types.List `tfsdk:"attributes"`
-	Permissions types.List `tfsdk:"permissions"`
-	AncestorPath types.List `tfsdk:"ancestor_path"`
+	Parent jsontypes.Normalized `tfsdk:"parent"`
+	Attributes jsontypes.Normalized `tfsdk:"attributes"`
+	Permissions jsontypes.Normalized `tfsdk:"permissions"`
+	AncestorPath jsontypes.Normalized `tfsdk:"ancestor_path"`
+	ParentId types.String `tfsdk:"parent_id"`
 }
 
 // ToClientModel converts a Terraform model to a client model.
-func (m *OrganizationModel) ToClientModel() *client.GetOrganizationResponse {
-	out := &client.GetOrganizationResponse{}
-	if !m.Id.IsNull() && !m.Id.IsUnknown() {
-		out.Id = m.Id.ValueString()
-	}
+func (m *OrganizationModel) ToClientModel() (*client.OrganizationPostRequest, error) {
+	out := &client.OrganizationPostRequest{}
 	if !m.Name.IsNull() && !m.Name.IsUnknown() {
 		out.Name = m.Name.ValueString()
 	}
@@ -40,25 +42,21 @@ func (m *OrganizationModel) ToClientModel() *client.GetOrganizationResponse {
 	if !m.Description.IsNull() && !m.Description.IsUnknown() {
 		out.Description = m.Description.ValueString()
 	}
-	if !m.Status.IsNull() && !m.Status.IsUnknown() {
-		out.Status = m.Status.ValueString()
-	}
-	if !m.Version.IsNull() && !m.Version.IsUnknown() {
-		out.Version = m.Version.ValueString()
-	}
-	if !m.Created.IsNull() && !m.Created.IsUnknown() {
-		out.Created = m.Created.ValueString()
-	}
-	if !m.LastModified.IsNull() && !m.LastModified.IsUnknown() {
-		out.LastModified = m.LastModified.ValueString()
-	}
 	if !m.Type.IsNull() && !m.Type.IsUnknown() {
 		out.Type = m.Type.ValueString()
 	}
-	if !m.HasChildren.IsNull() && !m.HasChildren.IsUnknown() {
-		out.HasChildren = m.HasChildren.ValueBool()
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.Attributes.IsNull() && !m.Attributes.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Attributes.ValueString()), &out.Attributes); err != nil {
+			return out, fmt.Errorf("attributes: %w", err)
+		}
 	}
-	return out
+	if !m.ParentId.IsNull() && !m.ParentId.IsUnknown() {
+		out.ParentId = m.ParentId.ValueString()
+	}
+	return out, nil
 }
 
 // FromClientModel updates the Terraform model from a client model.
@@ -73,4 +71,24 @@ func (m *OrganizationModel) FromClientModel(c *client.GetOrganizationResponse) {
 	m.LastModified = types.StringValue(c.LastModified)
 	m.Type = types.StringValue(c.Type)
 	m.HasChildren = types.BoolValue(c.HasChildren)
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.Parent); err == nil {
+		m.Parent = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.Attributes); err == nil {
+		m.Attributes = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.Permissions); err == nil {
+		m.Permissions = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.AncestorPath); err == nil {
+		m.AncestorPath = jsontypes.NewNormalizedValue(string(encoded))
+	}
 }

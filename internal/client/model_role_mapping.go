@@ -4,6 +4,6 @@ package client
 
 // RoleMapping - RoleMapping struct
 type RoleMapping struct {
-	LocalRole string `json:"localRole"`
-	ApplicationRole string `json:"applicationRole"`
+	LocalRole string `json:"localRole,omitempty"`
+	ApplicationRole string `json:"applicationRole,omitempty"`
 }

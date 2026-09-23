@@ -4,5 +4,5 @@ package client
 
 // ApplicationOwner - ApplicationOwner struct
 type ApplicationOwner struct {
-	Id string `json:"id"`
+	Id string `json:"id,omitempty"`
 }

@@ -4,7 +4,7 @@ package client
 
 // OrganizationPostRequest - OrganizationPostRequest struct
 type OrganizationPostRequest struct {
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	OrgHandle string `json:"orgHandle,omitempty"`
 	Description string `json:"description,omitempty"`
 	Type string `json:"type,omitempty"`

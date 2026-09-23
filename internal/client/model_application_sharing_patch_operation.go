@@ -4,7 +4,7 @@ package client
 
 // ApplicationSharingPatchOperation - ApplicationSharingPatchOperation struct
 type ApplicationSharingPatchOperation struct {
-	Op string `json:"op"`
-	Path string `json:"path"`
+	Op string `json:"op,omitempty"`
+	Path string `json:"path,omitempty"`
 	Value []map[string]interface{} `json:"value,omitempty"`
 }

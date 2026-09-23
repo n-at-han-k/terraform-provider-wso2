@@ -4,7 +4,7 @@ package client
 
 // CustomInboundProtocolConfiguration - CustomInboundProtocolConfiguration struct
 type CustomInboundProtocolConfiguration struct {
-	Name string `json:"name"`
-	ConfigName string `json:"configName"`
+	Name string `json:"name,omitempty"`
+	ConfigName string `json:"configName,omitempty"`
 	Properties []PropertyModel `json:"properties,omitempty"`
 }

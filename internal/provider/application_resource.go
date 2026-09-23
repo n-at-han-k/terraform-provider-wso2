@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 
@@ -39,7 +40,7 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: "Manages a application resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
-				Computed:    true,
+				Optional:    true,
 				Description: "",
 			},
 			"name": schema.StringAttribute{
@@ -51,7 +52,7 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "",
 			},
 			"application_version": schema.StringAttribute{
-				Optional:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"image_url": schema.StringAttribute{
@@ -67,15 +68,15 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "",
 			},
 			"client_id": schema.StringAttribute{
-				Optional:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"issuer": schema.StringAttribute{
-				Optional:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"realm": schema.StringAttribute{
-				Optional:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"template_id": schema.StringAttribute{
@@ -103,31 +104,41 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "Decides whether the application is enabled.",
 			},
 			"associated_roles": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Optional:    true,
 				Description: "",
 			},
 			"claim_configuration": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Optional:    true,
 				Description: "",
 			},
-			"inbound_protocols": schema.ListAttribute{
-				Optional:    true,
-				ElementType: types.StringType,
+			"inbound_protocols": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Description: "",
 			},
 			"authentication_sequence": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Optional:    true,
 				Description: "",
 			},
 			"advanced_configurations": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Optional:    true,
 				Description: "",
 			},
 			"provisioning_configurations": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Optional:    true,
 				Description: "",
 			},
 			"access": schema.StringAttribute{
+				Computed:    true,
+				Description: "",
+			},
+			"inbound_protocol_configuration": schema.StringAttribute{
+				CustomType:  jsontypes.NormalizedType{},
 				Optional:    true,
 				Description: "",
 			},
@@ -160,21 +171,40 @@ func (r *ApplicationResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	reqBody := plan.ToClientModel()
+	reqBody, err := plan.ToClientModel()
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid application configuration", err.Error())
+		return
+	}
 
-	respBody, err := r.client.DoRequest(ctx, "POST", "/applications", reqBody)
+	respBody, location, err := r.client.DoCreateRequest(ctx, "POST", "/applications", reqBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Error creating application", err.Error())
 		return
 	}
 
-	var result client.ApplicationResponseModel
-	if err := json.Unmarshal(respBody, &result); err != nil {
-		resp.Diagnostics.AddError("Error parsing response", err.Error())
-		return
+	// A create that answers 201 with nothing but a Location header -- WSO2 does
+	// this for tenants and applications. The identifier is in that header, and
+	// everything else the server assigned has to be fetched.
+	if len(respBody) == 0 {
+		plan.Id = types.StringValue(client.IDFromLocation(location))
+
+		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/applications/%v", plan.Id.ValueString()), nil)
+		if err != nil {
+			resp.Diagnostics.AddError("Error reading back the created application", err.Error())
+			return
+		}
 	}
 
-	plan.FromClientModel(&result)
+	if len(respBody) > 0 {
+		var result client.ApplicationResponseModel
+		if err := json.Unmarshal(respBody, &result); err != nil {
+			resp.Diagnostics.AddError("Error parsing response", err.Error())
+			return
+		}
+
+		plan.FromClientModel(&result)
+	}
 
 	tflog.Trace(ctx, "created application resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
@@ -213,7 +243,11 @@ func (r *ApplicationResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	reqBody := plan.ToClientModel()
+	reqBody, err := plan.ToClientModel()
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid application configuration", err.Error())
+		return
+	}
 
 	respBody, err := r.client.DoRequest(ctx, "PATCH", fmt.Sprintf("/applications/%v", plan.Id.ValueString()), reqBody)
 	if err != nil {

@@ -4,6 +4,6 @@ package client
 
 // Authenticator - Authenticator struct
 type Authenticator struct {
-	Idp string `json:"idp"`
-	Authenticator string `json:"authenticator"`
+	Idp string `json:"idp,omitempty"`
+	Authenticator string `json:"authenticator,omitempty"`
 }

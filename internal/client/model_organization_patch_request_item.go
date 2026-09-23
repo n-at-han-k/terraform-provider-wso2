@@ -4,7 +4,7 @@ package client
 
 // OrganizationPatchRequestItem - A JSONPatch as defined by RFC 6902. Patch operation is supported only for root level attributes of an organization.
 type OrganizationPatchRequestItem struct {
-	Operation string `json:"operation"`
-	Path string `json:"path"`
+	Operation string `json:"operation,omitempty"`
+	Path string `json:"path,omitempty"`
 	Value string `json:"value,omitempty"`
 }

@@ -5,6 +5,6 @@ package client
 // AuthorizedAuthorizationDetailsTypes - AuthorizedAuthorizationDetailsTypes struct
 type AuthorizedAuthorizationDetailsTypes struct {
 	Id string `json:"id,omitempty"`
-	Type string `json:"type"`
-	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
+	Name string `json:"name,omitempty"`
 }

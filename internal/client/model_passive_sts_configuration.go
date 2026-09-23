@@ -4,7 +4,7 @@ package client
 
 // PassiveStsConfiguration - PassiveStsConfiguration struct
 type PassiveStsConfiguration struct {
-	Realm string `json:"realm"`
-	ReplyTo string `json:"replyTo"`
+	Realm string `json:"realm,omitempty"`
+	ReplyTo string `json:"replyTo,omitempty"`
 	ReplyToLogout string `json:"replyToLogout,omitempty"`
 }

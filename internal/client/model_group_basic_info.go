@@ -4,6 +4,6 @@ package client
 
 // GroupBasicInfo - GroupBasicInfo struct
 type GroupBasicInfo struct {
-	Id string `json:"id"`
+	Id string `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
 }

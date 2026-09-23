@@ -4,10 +4,10 @@ package client
 
 // ClientSecretResponse - Client secret details.
 type ClientSecretResponse struct {
-	SecretId string `json:"secretId"`
+	SecretId string `json:"secretId,omitempty"`
 	SecretValue string `json:"secretValue,omitempty"`
-	ExpiresAt int64 `json:"expiresAt"`
+	ExpiresAt int64 `json:"expiresAt,omitempty"`
 	CreatedAt int64 `json:"createdAt,omitempty"`
-	Status string `json:"status"`
-	Latest bool `json:"latest"`
+	Status string `json:"status,omitempty"`
+	Latest bool `json:"latest,omitempty"`
 }

@@ -4,6 +4,6 @@ package client
 
 // OrganizationAttribute - OrganizationAttribute struct
 type OrganizationAttribute struct {
-	Key string `json:"key"`
-	Value string `json:"value"`
+	Key string `json:"key,omitempty"`
+	Value string `json:"value,omitempty"`
 }

@@ -4,9 +4,9 @@ package client
 
 // OwnerPutModel - OwnerPutModel struct
 type OwnerPutModel struct {
-	Email string `json:"email"`
+	Email string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
-	Firstname string `json:"firstname"`
-	Lastname string `json:"lastname"`
+	Firstname string `json:"firstname,omitempty"`
+	Lastname string `json:"lastname,omitempty"`
 	AdditionalClaims []AdditionalClaims `json:"additionalClaims,omitempty"`
 }
