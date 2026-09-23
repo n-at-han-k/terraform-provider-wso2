@@ -317,6 +317,7 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             attribute.put("inRequest", writes != null);
             attribute.put("readBack", sameShape);
 
+            unpoint(attribute);
             retype(attribute);
         }
 
@@ -569,6 +570,40 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         return names;
     }
 
+    /**
+     * A pointer to a scalar is still that scalar.
+     *
+     * Upstream decides an attribute's Terraform type by matching the Go type
+     * name, so making bools pointers -- which is what sends an explicit false
+     * -- turned every one of them into a types.String that no conversion
+     * branch touched, and the attribute was simply never assigned: "provider
+     * still indicated an unknown value for application_enabled".
+     */
+    private void unpoint(Map<String, Object> attribute) {
+        String goType = String.valueOf(attribute.get("goType"));
+
+        if (!goType.startsWith("*")) {
+            return;
+        }
+
+        String pointed = goType.substring(1);
+        boolean isBool = "bool".equals(pointed);
+        boolean isInt = "int".equals(pointed) || "int32".equals(pointed) || "int64".equals(pointed);
+        boolean isFloat = "float32".equals(pointed) || "float64".equals(pointed);
+        boolean isString = "string".equals(pointed);
+
+        if (!isBool && !isInt && !isFloat && !isString) {
+            return;
+        }
+
+        attribute.put("isBool", isBool);
+        attribute.put("isInt64", isInt);
+        attribute.put("isFloat64", isFloat);
+        attribute.put("isString", isString);
+        attribute.put("terraformType", goType(pointed));
+        attribute.put("terraformAttrType", goAttrType(pointed));
+    }
+
     /** A list or an object travels as JSON; the templates convert those. */
     private void retype(Map<String, Object> attribute) {
         if (!Boolean.TRUE.equals(attribute.get("isList"))
@@ -612,6 +647,7 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         attribute.put("terraformType", goType(property.dataType));
         attribute.put("terraformAttrType", goAttrType(property.dataType));
 
+        unpoint(attribute);
         retype(attribute);
 
         return attribute;

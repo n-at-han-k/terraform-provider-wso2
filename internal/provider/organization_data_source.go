@@ -70,7 +70,7 @@ func (d *OrganizationDataSource) Schema(_ context.Context, _ datasource.SchemaRe
 				Computed:    true,
 				Description: "",
 			},
-			"has_children": schema.StringAttribute{
+			"has_children": schema.BoolAttribute{
 				Computed:    true,
 				Description: "",
 			},

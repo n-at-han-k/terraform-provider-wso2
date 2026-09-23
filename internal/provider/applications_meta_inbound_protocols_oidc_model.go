@@ -23,7 +23,7 @@ type ApplicationsMetaInboundProtocolsOidcModel struct {
 	AccessTokenType jsontypes.Normalized `tfsdk:"access_token_type"`
 	AccessTokenBindingType jsontypes.Normalized `tfsdk:"access_token_binding_type"`
 	TokenEndpointAuthMethod jsontypes.Normalized `tfsdk:"token_endpoint_auth_method"`
-	TokenEndpointAllowReusePvtKeyJwt types.String `tfsdk:"token_endpoint_allow_reuse_pvt_key_jwt"`
+	TokenEndpointAllowReusePvtKeyJwt types.Bool `tfsdk:"token_endpoint_allow_reuse_pvt_key_jwt"`
 	TokenEndpointSignatureAlgorithm jsontypes.Normalized `tfsdk:"token_endpoint_signature_algorithm"`
 	IdTokenSignatureAlgorithm jsontypes.Normalized `tfsdk:"id_token_signature_algorithm"`
 	RequestObjectSignatureAlgorithm jsontypes.Normalized `tfsdk:"request_object_signature_algorithm"`
@@ -76,6 +76,15 @@ func (m *ApplicationsMetaInboundProtocolsOidcModel) FromClientModel(c *client.Oi
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.TokenEndpointAuthMethod); err == nil {
 		m.TokenEndpointAuthMethod = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.TokenEndpointAllowReusePvtKeyJwt != nil {
+		m.TokenEndpointAllowReusePvtKeyJwt = types.BoolValue(*c.TokenEndpointAllowReusePvtKeyJwt)
+	} else if m.TokenEndpointAllowReusePvtKeyJwt.IsUnknown() {
+		m.TokenEndpointAllowReusePvtKeyJwt = types.BoolNull()
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.

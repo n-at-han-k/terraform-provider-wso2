@@ -43,7 +43,7 @@ func (d *ApplicationInboundProtocolsOidcRegenerateSecretDataSource) Schema(_ con
 				Computed:    true,
 				Description: "The expiration time of the latest client secret, expressed in Unix epoch seconds. A value of 0 indicates that the secret never expires.",
 			},
-			"multiple_client_secrets_configured": schema.StringAttribute{
+			"multiple_client_secrets_configured": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Indicates if the application has more than one client secret.",
 			},
@@ -66,7 +66,7 @@ func (d *ApplicationInboundProtocolsOidcRegenerateSecretDataSource) Schema(_ con
 				Computed:    true,
 				Description: "Authorized JavaScript origins. CORS requests will be allowed to these origins.",
 			},
-			"public_client": schema.StringAttribute{
+			"public_client": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Enabling this option will allow the client to authenticate without a client secret.",
 			},
@@ -105,7 +105,7 @@ func (d *ApplicationInboundProtocolsOidcRegenerateSecretDataSource) Schema(_ con
 				Computed:    true,
 				Description: "",
 			},
-			"validate_request_object_signature": schema.StringAttribute{
+			"validate_request_object_signature": schema.BoolAttribute{
 				Computed:    true,
 				Description: "",
 			},
@@ -134,7 +134,7 @@ func (d *ApplicationInboundProtocolsOidcRegenerateSecretDataSource) Schema(_ con
 				Computed:    true,
 				Description: "",
 			},
-			"is_fapi_application": schema.StringAttribute{
+			"is_fapi_application": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Enabling this option will make the application FAPI conformant.",
 			},

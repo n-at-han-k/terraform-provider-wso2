@@ -80,7 +80,7 @@ func (d *ApplicationInboundProtocolsSamlDataSource) Schema(_ context.Context, _ 
 				Computed:    true,
 				Description: "",
 			},
-			"enable_assertion_query_profile": schema.StringAttribute{
+			"enable_assertion_query_profile": schema.BoolAttribute{
 				Computed:    true,
 				Description: "",
 			},

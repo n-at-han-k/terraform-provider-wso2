@@ -9,7 +9,7 @@ import (
 
 // OrganizationsCheckHandleModel is the Terraform model for organizations_check_handle.
 type OrganizationsCheckHandleModel struct {
-	Available types.String `tfsdk:"available"`
+	Available types.Bool `tfsdk:"available"`
 	OrgHandle types.String `tfsdk:"org_handle"`
 }
 
@@ -24,4 +24,13 @@ func (m *OrganizationsCheckHandleModel) ToClientModel() (*client.OrganizationHan
 
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsCheckHandleModel) FromClientModel(c *client.OrganizationCheckResponse) {
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.Available != nil {
+		m.Available = types.BoolValue(*c.Available)
+	} else if m.Available.IsUnknown() {
+		m.Available = types.BoolNull()
+	}
 }

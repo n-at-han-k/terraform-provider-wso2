@@ -30,7 +30,7 @@ func (d *OrganizationsCheckDiscoveryDataSource) Schema(_ context.Context, _ data
 	resp.Schema = schema.Schema{
 		Description: "Fetches a organizations_check_discovery data source.",
 		Attributes: map[string]schema.Attribute{
-			"available": schema.StringAttribute{
+			"available": schema.BoolAttribute{
 				Computed:    true,
 				Description: "",
 			},

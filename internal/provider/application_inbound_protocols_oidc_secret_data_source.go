@@ -53,7 +53,7 @@ func (d *ApplicationInboundProtocolsOidcSecretDataSource) Schema(_ context.Conte
 				Computed:    true,
 				Description: "Status of the secret.",
 			},
-			"latest": schema.StringAttribute{
+			"latest": schema.BoolAttribute{
 				Computed:    true,
 				Description: "Whether this is the latest (active) secret of the application. The latest secret cannot be deleted.",
 			},

@@ -14,7 +14,7 @@ type ApplicationInboundProtocolsOidcSecretModel struct {
 	ExpiresAt types.Int64 `tfsdk:"expires_at"`
 	CreatedAt types.Int64 `tfsdk:"created_at"`
 	Status types.String `tfsdk:"status"`
-	Latest types.String `tfsdk:"latest"`
+	Latest types.Bool `tfsdk:"latest"`
 	ApplicationId types.String `tfsdk:"application_id"`
 }
 
@@ -34,4 +34,13 @@ func (m *ApplicationInboundProtocolsOidcSecretModel) FromClientModel(c *client.C
 	m.ExpiresAt = types.Int64Value(int64(c.ExpiresAt))
 	m.CreatedAt = types.Int64Value(int64(c.CreatedAt))
 	m.Status = types.StringValue(c.Status)
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.Latest != nil {
+		m.Latest = types.BoolValue(*c.Latest)
+	} else if m.Latest.IsUnknown() {
+		m.Latest = types.BoolNull()
+	}
 }

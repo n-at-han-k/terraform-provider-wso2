@@ -23,7 +23,7 @@ type ApplicationInboundProtocolsSamlModel struct {
 	SingleLogoutProfile jsontypes.Normalized `tfsdk:"single_logout_profile"`
 	RequestValidation jsontypes.Normalized `tfsdk:"request_validation"`
 	ResponseSigning jsontypes.Normalized `tfsdk:"response_signing"`
-	EnableAssertionQueryProfile types.String `tfsdk:"enable_assertion_query_profile"`
+	EnableAssertionQueryProfile types.Bool `tfsdk:"enable_assertion_query_profile"`
 	MetadataFile types.String `tfsdk:"metadata_file"`
 	MetadataURL types.String `tfsdk:"metadata_url"`
 	ManualConfiguration jsontypes.Normalized `tfsdk:"manual_configuration"`
@@ -85,5 +85,14 @@ func (m *ApplicationInboundProtocolsSamlModel) FromClientModel(c *client.Saml2Se
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.ResponseSigning); err == nil {
 		m.ResponseSigning = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.EnableAssertionQueryProfile != nil {
+		m.EnableAssertionQueryProfile = types.BoolValue(*c.EnableAssertionQueryProfile)
+	} else if m.EnableAssertionQueryProfile.IsUnknown() {
+		m.EnableAssertionQueryProfile = types.BoolNull()
 	}
 }

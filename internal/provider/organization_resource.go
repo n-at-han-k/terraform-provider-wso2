@@ -80,7 +80,7 @@ func (r *OrganizationResource) Schema(_ context.Context, _ resource.SchemaReques
 				Optional:    true,
 				Description: "",
 			},
-			"has_children": schema.StringAttribute{
+			"has_children": schema.BoolAttribute{
 				Computed:    true,
 				Description: "",
 			},

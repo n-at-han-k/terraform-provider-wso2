@@ -9,13 +9,19 @@ import (
 
 // TenantLifecycleStatusModel is the Terraform model for tenant_lifecycle_status.
 type TenantLifecycleStatusModel struct {
-	Activated types.String `tfsdk:"activated"`
+	Activated types.Bool `tfsdk:"activated"`
 	TenantId types.String `tfsdk:"tenant_id"`
 }
 
 // ToClientModel converts a Terraform model to a client model.
 func (m *TenantLifecycleStatusModel) ToClientModel() (*client.TenantPutModel, error) {
 	out := &client.TenantPutModel{}
+	if !m.Activated.IsNull() && !m.Activated.IsUnknown() {
+		// Addressed, not assigned: the client field is a *bool so that an
+		// explicit false is sent rather than dropped by `omitempty`.
+		Activated := m.Activated.ValueBool()
+		out.Activated = &Activated
+	}
 	return out, nil
 }
 

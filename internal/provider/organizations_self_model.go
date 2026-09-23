@@ -22,7 +22,7 @@ type OrganizationsSelfModel struct {
 	LastModified types.String `tfsdk:"last_modified"`
 	Type types.String `tfsdk:"type"`
 	Parent jsontypes.Normalized `tfsdk:"parent"`
-	HasChildren types.String `tfsdk:"has_children"`
+	HasChildren types.Bool `tfsdk:"has_children"`
 	Attributes jsontypes.Normalized `tfsdk:"attributes"`
 }
 
@@ -42,6 +42,15 @@ func (m *OrganizationsSelfModel) FromClientModel(c *client.OrganizationResponse)
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.Parent); err == nil {
 		m.Parent = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.HasChildren != nil {
+		m.HasChildren = types.BoolValue(*c.HasChildren)
+	} else if m.HasChildren.IsUnknown() {
+		m.HasChildren = types.BoolNull()
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.

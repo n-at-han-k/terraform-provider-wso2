@@ -15,12 +15,12 @@ type ApplicationInboundProtocolsOidcRegenerateSecretModel struct {
 	ClientId types.String `tfsdk:"client_id"`
 	ClientSecret types.String `tfsdk:"client_secret"`
 	ClientSecretExpiresAt types.Int64 `tfsdk:"client_secret_expires_at"`
-	MultipleClientSecretsConfigured types.String `tfsdk:"multiple_client_secrets_configured"`
+	MultipleClientSecretsConfigured types.Bool `tfsdk:"multiple_client_secrets_configured"`
 	State types.String `tfsdk:"state"`
 	GrantTypes jsontypes.Normalized `tfsdk:"grant_types"`
 	CallbackURLs jsontypes.Normalized `tfsdk:"callback_urls"`
 	AllowedOrigins jsontypes.Normalized `tfsdk:"allowed_origins"`
-	PublicClient types.String `tfsdk:"public_client"`
+	PublicClient types.Bool `tfsdk:"public_client"`
 	Pkce jsontypes.Normalized `tfsdk:"pkce"`
 	AccessToken jsontypes.Normalized `tfsdk:"access_token"`
 	HybridFlow jsontypes.Normalized `tfsdk:"hybrid_flow"`
@@ -28,13 +28,13 @@ type ApplicationInboundProtocolsOidcRegenerateSecretModel struct {
 	SubjectToken jsontypes.Normalized `tfsdk:"subject_token"`
 	IdToken jsontypes.Normalized `tfsdk:"id_token"`
 	Logout jsontypes.Normalized `tfsdk:"logout"`
-	ValidateRequestObjectSignature types.String `tfsdk:"validate_request_object_signature"`
+	ValidateRequestObjectSignature types.Bool `tfsdk:"validate_request_object_signature"`
 	ScopeValidators jsontypes.Normalized `tfsdk:"scope_validators"`
 	ClientAuthentication jsontypes.Normalized `tfsdk:"client_authentication"`
 	RequestObject jsontypes.Normalized `tfsdk:"request_object"`
 	PushAuthorizationRequest jsontypes.Normalized `tfsdk:"push_authorization_request"`
 	Subject jsontypes.Normalized `tfsdk:"subject"`
-	IsFAPIApplication types.String `tfsdk:"is_fapi_application"`
+	IsFAPIApplication types.Bool `tfsdk:"is_fapi_application"`
 	FapiProfile types.String `tfsdk:"fapi_profile"`
 	CibaAuthenticationRequest jsontypes.Normalized `tfsdk:"ciba_authentication_request"`
 	Issuer jsontypes.Normalized `tfsdk:"issuer"`
@@ -48,6 +48,15 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	m.ClientId = types.StringValue(c.ClientId)
 	m.ClientSecret = types.StringValue(c.ClientSecret)
 	m.ClientSecretExpiresAt = types.Int64Value(int64(c.ClientSecretExpiresAt))
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.MultipleClientSecretsConfigured != nil {
+		m.MultipleClientSecretsConfigured = types.BoolValue(*c.MultipleClientSecretsConfigured)
+	} else if m.MultipleClientSecretsConfigured.IsUnknown() {
+		m.MultipleClientSecretsConfigured = types.BoolNull()
+	}
 	m.State = types.StringValue(c.State)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
@@ -63,6 +72,15 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.AllowedOrigins); err == nil {
 		m.AllowedOrigins = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.PublicClient != nil {
+		m.PublicClient = types.BoolValue(*c.PublicClient)
+	} else if m.PublicClient.IsUnknown() {
+		m.PublicClient = types.BoolNull()
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
@@ -99,6 +117,15 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	if encoded, err := json.Marshal(c.Logout); err == nil {
 		m.Logout = jsontypes.NewNormalizedValue(string(encoded))
 	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.ValidateRequestObjectSignature != nil {
+		m.ValidateRequestObjectSignature = types.BoolValue(*c.ValidateRequestObjectSignature)
+	} else if m.ValidateRequestObjectSignature.IsUnknown() {
+		m.ValidateRequestObjectSignature = types.BoolNull()
+	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.ScopeValidators); err == nil {
@@ -123,6 +150,15 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.Subject); err == nil {
 		m.Subject = jsontypes.NewNormalizedValue(string(encoded))
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.IsFAPIApplication != nil {
+		m.IsFAPIApplication = types.BoolValue(*c.IsFAPIApplication)
+	} else if m.IsFAPIApplication.IsUnknown() {
+		m.IsFAPIApplication = types.BoolNull()
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.

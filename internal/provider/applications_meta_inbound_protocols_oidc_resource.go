@@ -89,7 +89,7 @@ func (r *ApplicationsMetaInboundProtocolsOidcResource) Schema(_ context.Context,
 				Optional:    true,
 				Description: "",
 			},
-			"token_endpoint_allow_reuse_pvt_key_jwt": schema.StringAttribute{
+			"token_endpoint_allow_reuse_pvt_key_jwt": schema.BoolAttribute{
 				Optional:    true,
 				Description: "",
 			},

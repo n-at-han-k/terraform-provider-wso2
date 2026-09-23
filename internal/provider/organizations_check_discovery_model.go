@@ -9,7 +9,7 @@ import (
 
 // OrganizationsCheckDiscoveryModel is the Terraform model for organizations_check_discovery.
 type OrganizationsCheckDiscoveryModel struct {
-	Available types.String `tfsdk:"available"`
+	Available types.Bool `tfsdk:"available"`
 	Type types.String `tfsdk:"type"`
 	Value types.String `tfsdk:"value"`
 }
@@ -28,4 +28,13 @@ func (m *OrganizationsCheckDiscoveryModel) ToClientModel() (*client.Organization
 
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsCheckDiscoveryModel) FromClientModel(c *client.OrganizationDiscoveryCheckPostResponse) {
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.Available != nil {
+		m.Available = types.BoolValue(*c.Available)
+	} else if m.Available.IsUnknown() {
+		m.Available = types.BoolNull()
+	}
 }

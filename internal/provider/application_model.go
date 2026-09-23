@@ -25,10 +25,10 @@ type ApplicationModel struct {
 	Realm types.String `tfsdk:"realm"`
 	TemplateId types.String `tfsdk:"template_id"`
 	TemplateVersion types.String `tfsdk:"template_version"`
-	IsManagementApp types.String `tfsdk:"is_management_app"`
-	IsB2BSelfServiceApp types.String `tfsdk:"is_b2_b_self_service_app"`
-	EnhancedOrgAuthenticationEnabled types.String `tfsdk:"enhanced_org_authentication_enabled"`
-	ApplicationEnabled types.String `tfsdk:"application_enabled"`
+	IsManagementApp types.Bool `tfsdk:"is_management_app"`
+	IsB2BSelfServiceApp types.Bool `tfsdk:"is_b2_b_self_service_app"`
+	EnhancedOrgAuthenticationEnabled types.Bool `tfsdk:"enhanced_org_authentication_enabled"`
+	ApplicationEnabled types.Bool `tfsdk:"application_enabled"`
 	AssociatedRoles jsontypes.Normalized `tfsdk:"associated_roles"`
 	ClaimConfiguration jsontypes.Normalized `tfsdk:"claim_configuration"`
 	InboundProtocols jsontypes.Normalized `tfsdk:"inbound_protocols"`
@@ -65,6 +65,30 @@ func (m *ApplicationModel) ToClientModel() (*client.ApplicationModel, error) {
 	}
 	if !m.TemplateVersion.IsNull() && !m.TemplateVersion.IsUnknown() {
 		out.TemplateVersion = m.TemplateVersion.ValueString()
+	}
+	if !m.IsManagementApp.IsNull() && !m.IsManagementApp.IsUnknown() {
+		// Addressed, not assigned: the client field is a *bool so that an
+		// explicit false is sent rather than dropped by `omitempty`.
+		IsManagementApp := m.IsManagementApp.ValueBool()
+		out.IsManagementApp = &IsManagementApp
+	}
+	if !m.IsB2BSelfServiceApp.IsNull() && !m.IsB2BSelfServiceApp.IsUnknown() {
+		// Addressed, not assigned: the client field is a *bool so that an
+		// explicit false is sent rather than dropped by `omitempty`.
+		IsB2BSelfServiceApp := m.IsB2BSelfServiceApp.ValueBool()
+		out.IsB2BSelfServiceApp = &IsB2BSelfServiceApp
+	}
+	if !m.EnhancedOrgAuthenticationEnabled.IsNull() && !m.EnhancedOrgAuthenticationEnabled.IsUnknown() {
+		// Addressed, not assigned: the client field is a *bool so that an
+		// explicit false is sent rather than dropped by `omitempty`.
+		EnhancedOrgAuthenticationEnabled := m.EnhancedOrgAuthenticationEnabled.ValueBool()
+		out.EnhancedOrgAuthenticationEnabled = &EnhancedOrgAuthenticationEnabled
+	}
+	if !m.ApplicationEnabled.IsNull() && !m.ApplicationEnabled.IsUnknown() {
+		// Addressed, not assigned: the client field is a *bool so that an
+		// explicit false is sent rather than dropped by `omitempty`.
+		ApplicationEnabled := m.ApplicationEnabled.ValueBool()
+		out.ApplicationEnabled = &ApplicationEnabled
 	}
 	// A silently dropped field is worse than a loud one: bad JSON here means
 	// the configuration said something this resource cannot send, and the
@@ -131,6 +155,42 @@ func (m *ApplicationModel) FromClientModel(c *client.ApplicationResponseModel) {
 	m.Realm = types.StringValue(c.Realm)
 	m.TemplateId = types.StringValue(c.TemplateId)
 	m.TemplateVersion = types.StringValue(c.TemplateVersion)
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.IsManagementApp != nil {
+		m.IsManagementApp = types.BoolValue(*c.IsManagementApp)
+	} else if m.IsManagementApp.IsUnknown() {
+		m.IsManagementApp = types.BoolNull()
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.IsB2BSelfServiceApp != nil {
+		m.IsB2BSelfServiceApp = types.BoolValue(*c.IsB2BSelfServiceApp)
+	} else if m.IsB2BSelfServiceApp.IsUnknown() {
+		m.IsB2BSelfServiceApp = types.BoolNull()
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.EnhancedOrgAuthenticationEnabled != nil {
+		m.EnhancedOrgAuthenticationEnabled = types.BoolValue(*c.EnhancedOrgAuthenticationEnabled)
+	} else if m.EnhancedOrgAuthenticationEnabled.IsUnknown() {
+		m.EnhancedOrgAuthenticationEnabled = types.BoolNull()
+	}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
+	if c.ApplicationEnabled != nil {
+		m.ApplicationEnabled = types.BoolValue(*c.ApplicationEnabled)
+	} else if m.ApplicationEnabled.IsUnknown() {
+		m.ApplicationEnabled = types.BoolNull()
+	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.AssociatedRoles); err == nil {
