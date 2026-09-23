@@ -11,8 +11,8 @@ import (
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
 
-// ApplicationAuthorizedModel is the Terraform model for application_authorized.
-type ApplicationAuthorizedModel struct {
+// ApplicationAuthorizedApiModel is the Terraform model for application_authorized_api.
+type ApplicationAuthorizedApiModel struct {
 	Id types.String `tfsdk:"id"`
 	PolicyIdentifier types.String `tfsdk:"policy_identifier"`
 	Scopes jsontypes.Normalized `tfsdk:"scopes"`
@@ -21,7 +21,7 @@ type ApplicationAuthorizedModel struct {
 }
 
 // ToClientModel converts a Terraform model to a client model.
-func (m *ApplicationAuthorizedModel) ToClientModel() (*client.AuthorizedApiCreationModel, error) {
+func (m *ApplicationAuthorizedApiModel) ToClientModel() (*client.AuthorizedApiCreationModel, error) {
 	out := &client.AuthorizedApiCreationModel{}
 	if !m.Id.IsNull() && !m.Id.IsUnknown() {
 		out.Id = m.Id.ValueString()

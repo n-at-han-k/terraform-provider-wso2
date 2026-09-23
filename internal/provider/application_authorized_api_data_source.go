@@ -13,23 +13,23 @@ import (
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
 
-var _ datasource.DataSource = &ApplicationAuthorizedDataSource{}
+var _ datasource.DataSource = &ApplicationAuthorizedApiDataSource{}
 
-func NewApplicationAuthorizedDataSource() datasource.DataSource {
-	return &ApplicationAuthorizedDataSource{}
+func NewApplicationAuthorizedApiDataSource() datasource.DataSource {
+	return &ApplicationAuthorizedApiDataSource{}
 }
 
-type ApplicationAuthorizedDataSource struct {
+type ApplicationAuthorizedApiDataSource struct {
 	client *client.Client
 }
 
-func (d *ApplicationAuthorizedDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_application_authorized"
+func (d *ApplicationAuthorizedApiDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_application_authorized_api"
 }
 
-func (d *ApplicationAuthorizedDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *ApplicationAuthorizedApiDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Fetches a application_authorized data source.",
+		Description: "Fetches a application_authorized_api data source.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
@@ -57,7 +57,7 @@ func (d *ApplicationAuthorizedDataSource) Schema(_ context.Context, _ datasource
 	}
 }
 
-func (d *ApplicationAuthorizedDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *ApplicationAuthorizedApiDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -74,6 +74,6 @@ func (d *ApplicationAuthorizedDataSource) Configure(_ context.Context, req datas
 	d.client = c
 }
 
-func (d *ApplicationAuthorizedDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	resp.Diagnostics.AddError("Not Supported", "Read is not supported for application_authorized")
+func (d *ApplicationAuthorizedApiDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	resp.Diagnostics.AddError("Not Supported", "Read is not supported for application_authorized_api")
 }

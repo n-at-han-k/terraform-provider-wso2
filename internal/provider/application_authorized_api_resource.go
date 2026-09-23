@@ -23,24 +23,24 @@ import (
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
 
-var _ resource.Resource = &ApplicationAuthorizedResource{}
-var _ resource.ResourceWithImportState = &ApplicationAuthorizedResource{}
+var _ resource.Resource = &ApplicationAuthorizedApiResource{}
+var _ resource.ResourceWithImportState = &ApplicationAuthorizedApiResource{}
 
-func NewApplicationAuthorizedResource() resource.Resource {
-	return &ApplicationAuthorizedResource{}
+func NewApplicationAuthorizedApiResource() resource.Resource {
+	return &ApplicationAuthorizedApiResource{}
 }
 
-type ApplicationAuthorizedResource struct {
+type ApplicationAuthorizedApiResource struct {
 	client *client.Client
 }
 
-func (r *ApplicationAuthorizedResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_application_authorized"
+func (r *ApplicationAuthorizedApiResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_application_authorized_api"
 }
 
-func (r *ApplicationAuthorizedResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *ApplicationAuthorizedApiResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages a application_authorized resource.",
+		Description: "Manages a application_authorized_api resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
@@ -68,7 +68,7 @@ func (r *ApplicationAuthorizedResource) Schema(_ context.Context, _ resource.Sch
 	}
 }
 
-func (r *ApplicationAuthorizedResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *ApplicationAuthorizedApiResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -85,8 +85,8 @@ func (r *ApplicationAuthorizedResource) Configure(_ context.Context, req resourc
 	r.client = c
 }
 
-func (r *ApplicationAuthorizedResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	var plan ApplicationAuthorizedModel
+func (r *ApplicationAuthorizedApiResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+	var plan ApplicationAuthorizedApiModel
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
@@ -95,13 +95,13 @@ func (r *ApplicationAuthorizedResource) Create(ctx context.Context, req resource
 
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
-		resp.Diagnostics.AddError("Invalid application_authorized configuration", err.Error())
+		resp.Diagnostics.AddError("Invalid application_authorized_api configuration", err.Error())
 		return
 	}
 
 	respBody, location, err := r.client.DoCreateRequest(ctx, "POST", fmt.Sprintf("/applications/%v/authorized-apis", plan.ApplicationId.ValueString()), reqBody)
 	if err != nil {
-		resp.Diagnostics.AddError("Error creating application_authorized", err.Error())
+		resp.Diagnostics.AddError("Error creating application_authorized_api", err.Error())
 		return
 	}
 
@@ -114,16 +114,16 @@ func (r *ApplicationAuthorizedResource) Create(ctx context.Context, req resource
 
 	_ = respBody
 
-	tflog.Trace(ctx, "created application_authorized resource")
+	tflog.Trace(ctx, "created application_authorized_api resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
-func (r *ApplicationAuthorizedResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *ApplicationAuthorizedApiResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	// No read endpoint available; keep existing state as-is.
 }
 
-func (r *ApplicationAuthorizedResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	var plan ApplicationAuthorizedModel
+func (r *ApplicationAuthorizedApiResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+	var plan ApplicationAuthorizedApiModel
 
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
@@ -133,7 +133,7 @@ func (r *ApplicationAuthorizedResource) Update(ctx context.Context, req resource
 	// The identifiers come off state: they cannot change on an update, and the
 	// plan's copy of a Computed one is unknown -- which is also the only place
 	// an imported nested resource's parents live.
-	var state ApplicationAuthorizedModel
+	var state ApplicationAuthorizedApiModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -141,24 +141,24 @@ func (r *ApplicationAuthorizedResource) Update(ctx context.Context, req resource
 
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
-		resp.Diagnostics.AddError("Invalid application_authorized configuration", err.Error())
+		resp.Diagnostics.AddError("Invalid application_authorized_api configuration", err.Error())
 		return
 	}
 
 	respBody, err := r.client.DoRequest(ctx, "PATCH", fmt.Sprintf("/applications/%v/authorized-apis/%v", state.ApplicationId.ValueString(), state.Id.ValueString()), reqBody)
 	if err != nil {
-		resp.Diagnostics.AddError("Error updating application_authorized", err.Error())
+		resp.Diagnostics.AddError("Error updating application_authorized_api", err.Error())
 		return
 	}
 
 	_ = respBody
 
-	tflog.Trace(ctx, "updated application_authorized resource")
+	tflog.Trace(ctx, "updated application_authorized_api resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 
-func (r *ApplicationAuthorizedResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	var state ApplicationAuthorizedModel
+func (r *ApplicationAuthorizedApiResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+	var state ApplicationAuthorizedApiModel
 
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
 	if resp.Diagnostics.HasError() {
@@ -167,14 +167,14 @@ func (r *ApplicationAuthorizedResource) Delete(ctx context.Context, req resource
 
 	_, err := r.client.DoRequest(ctx, "DELETE", fmt.Sprintf("/applications/%v/authorized-apis/%v", state.ApplicationId.ValueString(), state.Id.ValueString()), nil)
 	if err != nil {
-		resp.Diagnostics.AddError("Error deleting application_authorized", err.Error())
+		resp.Diagnostics.AddError("Error deleting application_authorized_api", err.Error())
 		return
 	}
 
-	tflog.Trace(ctx, "deleted application_authorized resource")
+	tflog.Trace(ctx, "deleted application_authorized_api resource")
 }
 
-func (r *ApplicationAuthorizedResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *ApplicationAuthorizedApiResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 
 	// A nested resource is addressed by its parents as well as itself, and an
 	// import id carries only what it is given.

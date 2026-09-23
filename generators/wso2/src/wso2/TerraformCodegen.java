@@ -194,6 +194,15 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             }
         }
 
+        // Upstream strips a trailing "api" off the resource name, which is right
+        // for a tag called PetApi and wrong for a PATH segment: /authorized-apis
+        // became wso2_application_authorized -- a name that says nothing, and
+        // one the file beside it (application_authorized_api_resource.go) does
+        // not even agree with. The path already named this resource.
+        processed.getOperations().put("resourceClassName", toApiName(collection));
+        processed.getOperations().put("resourceName",
+                underscore(toApiName(collection)).toLowerCase(Locale.ROOT));
+
         reshapeAttributes(processed.getOperations(), allModels);
         wirePathParams(processed.getOperations(), group);
 
