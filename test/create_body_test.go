@@ -56,3 +56,33 @@ func TestApplicationCreateBodyOmitsUnsetObjects(t *testing.T) {
 
 	t.Logf("body: %s", body)
 }
+
+// An explicit false must be SENT, not dropped. `omitempty` on a bool cannot
+// tell false from unset, and WSO2 answers a missing
+// supportPlainTransformAlgorithm with a 500, APP-65006 -- sending it is a 201.
+// Verified against the server both ways.
+func TestExplicitFalseSurvivesTheWire(t *testing.T) {
+	out := &client.ApplicationModel{}
+	out.Name = "plaat.fm"
+
+	inbound := `{"oidc":{"publicClient":true,` +
+		`"pkce":{"mandatory":true,"supportPlainTransformAlgorithm":false}}}`
+	if err := json.Unmarshal([]byte(inbound), &out.InboundProtocolConfiguration); err != nil {
+		t.Fatalf("inbound: %v", err)
+	}
+
+	body, err := json.Marshal(out)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+
+	var got map[string]any
+	if err := json.Unmarshal(body, &got); err != nil {
+		t.Fatalf("remarshal: %v", err)
+	}
+
+	pkce := got["inboundProtocolConfiguration"].(map[string]any)["oidc"].(map[string]any)["pkce"].(map[string]any)
+	if _, present := pkce["supportPlainTransformAlgorithm"]; !present {
+		t.Errorf("an explicit false must be sent; body was %s", body)
+	}
+}

@@ -9,7 +9,7 @@ import (
 
 // OrganizationsCheckDiscoveryModel is the Terraform model for organizations_check_discovery.
 type OrganizationsCheckDiscoveryModel struct {
-	Available types.Bool `tfsdk:"available"`
+	Available types.String `tfsdk:"available"`
 	Type types.String `tfsdk:"type"`
 	Value types.String `tfsdk:"value"`
 }
@@ -28,5 +28,4 @@ func (m *OrganizationsCheckDiscoveryModel) ToClientModel() (*client.Organization
 
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsCheckDiscoveryModel) FromClientModel(c *client.OrganizationDiscoveryCheckPostResponse) {
-	m.Available = types.BoolValue(c.Available)
 }

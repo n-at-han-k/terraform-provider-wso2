@@ -9,7 +9,7 @@ import (
 
 // OrganizationsCheckNameModel is the Terraform model for organizations_check_name.
 type OrganizationsCheckNameModel struct {
-	Available types.Bool `tfsdk:"available"`
+	Available types.String `tfsdk:"available"`
 	Name types.String `tfsdk:"name"`
 }
 
@@ -24,5 +24,4 @@ func (m *OrganizationsCheckNameModel) ToClientModel() (*client.OrganizationNameC
 
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsCheckNameModel) FromClientModel(c *client.OrganizationNameCheckPostResponse) {
-	m.Available = types.BoolValue(c.Available)
 }

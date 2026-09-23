@@ -9,5 +9,5 @@ type ClientSecretResponse struct {
 	ExpiresAt int64 `json:"expiresAt,omitempty"`
 	CreatedAt int64 `json:"createdAt,omitempty"`
 	Status string `json:"status,omitempty"`
-	Latest bool `json:"latest,omitempty"`
+	Latest *bool `json:"latest,omitempty"`
 }

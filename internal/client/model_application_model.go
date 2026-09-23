@@ -12,10 +12,10 @@ type ApplicationModel struct {
 	LogoutReturnUrl string `json:"logoutReturnUrl,omitempty"`
 	TemplateId string `json:"templateId,omitempty"`
 	TemplateVersion string `json:"templateVersion,omitempty"`
-	IsManagementApp bool `json:"isManagementApp,omitempty"`
-	IsB2BSelfServiceApp bool `json:"isB2BSelfServiceApp,omitempty"`
-	EnhancedOrgAuthenticationEnabled bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
-	ApplicationEnabled bool `json:"applicationEnabled,omitempty"`
+	IsManagementApp *bool `json:"isManagementApp,omitempty"`
+	IsB2BSelfServiceApp *bool `json:"isB2BSelfServiceApp,omitempty"`
+	EnhancedOrgAuthenticationEnabled *bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
+	ApplicationEnabled *bool `json:"applicationEnabled,omitempty"`
 	AssociatedRoles *AssociatedRolesConfig `json:"associatedRoles,omitempty"`
 	ClaimConfiguration *ClaimConfiguration `json:"claimConfiguration,omitempty"`
 	InboundProtocolConfiguration *InboundProtocols `json:"inboundProtocolConfiguration,omitempty"`

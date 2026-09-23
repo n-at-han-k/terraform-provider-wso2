@@ -9,7 +9,7 @@ type OrganizationBasicOrganizationResponse struct {
 	OrgHandle string `json:"orgHandle,omitempty"`
 	Status string `json:"status,omitempty"`
 	Version string `json:"version,omitempty"`
-	HasChildren bool `json:"hasChildren,omitempty"`
+	HasChildren *bool `json:"hasChildren,omitempty"`
 	Ref string `json:"ref,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 }

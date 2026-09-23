@@ -8,8 +8,8 @@ type AccessTokenConfiguration struct {
 	UserAccessTokenExpiryInSeconds int64 `json:"userAccessTokenExpiryInSeconds,omitempty"`
 	ApplicationAccessTokenExpiryInSeconds int64 `json:"applicationAccessTokenExpiryInSeconds,omitempty"`
 	BindingType string `json:"bindingType,omitempty"`
-	RevokeTokensWhenIDPSessionTerminated bool `json:"revokeTokensWhenIDPSessionTerminated,omitempty"`
-	ValidateTokenBinding bool `json:"validateTokenBinding,omitempty"`
+	RevokeTokensWhenIDPSessionTerminated *bool `json:"revokeTokensWhenIDPSessionTerminated,omitempty"`
+	ValidateTokenBinding *bool `json:"validateTokenBinding,omitempty"`
 	AccessTokenAttributes []string `json:"accessTokenAttributes,omitempty"`
-	EnableJwtScopeAsArray bool `json:"enableJwtScopeAsArray,omitempty"`
+	EnableJwtScopeAsArray *bool `json:"enableJwtScopeAsArray,omitempty"`
 }

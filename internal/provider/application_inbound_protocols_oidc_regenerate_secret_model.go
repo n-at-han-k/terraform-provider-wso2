@@ -15,12 +15,12 @@ type ApplicationInboundProtocolsOidcRegenerateSecretModel struct {
 	ClientId types.String `tfsdk:"client_id"`
 	ClientSecret types.String `tfsdk:"client_secret"`
 	ClientSecretExpiresAt types.Int64 `tfsdk:"client_secret_expires_at"`
-	MultipleClientSecretsConfigured types.Bool `tfsdk:"multiple_client_secrets_configured"`
+	MultipleClientSecretsConfigured types.String `tfsdk:"multiple_client_secrets_configured"`
 	State types.String `tfsdk:"state"`
 	GrantTypes jsontypes.Normalized `tfsdk:"grant_types"`
 	CallbackURLs jsontypes.Normalized `tfsdk:"callback_urls"`
 	AllowedOrigins jsontypes.Normalized `tfsdk:"allowed_origins"`
-	PublicClient types.Bool `tfsdk:"public_client"`
+	PublicClient types.String `tfsdk:"public_client"`
 	Pkce jsontypes.Normalized `tfsdk:"pkce"`
 	AccessToken jsontypes.Normalized `tfsdk:"access_token"`
 	HybridFlow jsontypes.Normalized `tfsdk:"hybrid_flow"`
@@ -28,13 +28,13 @@ type ApplicationInboundProtocolsOidcRegenerateSecretModel struct {
 	SubjectToken jsontypes.Normalized `tfsdk:"subject_token"`
 	IdToken jsontypes.Normalized `tfsdk:"id_token"`
 	Logout jsontypes.Normalized `tfsdk:"logout"`
-	ValidateRequestObjectSignature types.Bool `tfsdk:"validate_request_object_signature"`
+	ValidateRequestObjectSignature types.String `tfsdk:"validate_request_object_signature"`
 	ScopeValidators jsontypes.Normalized `tfsdk:"scope_validators"`
 	ClientAuthentication jsontypes.Normalized `tfsdk:"client_authentication"`
 	RequestObject jsontypes.Normalized `tfsdk:"request_object"`
 	PushAuthorizationRequest jsontypes.Normalized `tfsdk:"push_authorization_request"`
 	Subject jsontypes.Normalized `tfsdk:"subject"`
-	IsFAPIApplication types.Bool `tfsdk:"is_fapi_application"`
+	IsFAPIApplication types.String `tfsdk:"is_fapi_application"`
 	FapiProfile types.String `tfsdk:"fapi_profile"`
 	CibaAuthenticationRequest jsontypes.Normalized `tfsdk:"ciba_authentication_request"`
 	Issuer jsontypes.Normalized `tfsdk:"issuer"`
@@ -48,7 +48,6 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	m.ClientId = types.StringValue(c.ClientId)
 	m.ClientSecret = types.StringValue(c.ClientSecret)
 	m.ClientSecretExpiresAt = types.Int64Value(int64(c.ClientSecretExpiresAt))
-	m.MultipleClientSecretsConfigured = types.BoolValue(c.MultipleClientSecretsConfigured)
 	m.State = types.StringValue(c.State)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
@@ -65,7 +64,6 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	if encoded, err := json.Marshal(c.AllowedOrigins); err == nil {
 		m.AllowedOrigins = jsontypes.NewNormalizedValue(string(encoded))
 	}
-	m.PublicClient = types.BoolValue(c.PublicClient)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.Pkce); err == nil {
@@ -101,7 +99,6 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	if encoded, err := json.Marshal(c.Logout); err == nil {
 		m.Logout = jsontypes.NewNormalizedValue(string(encoded))
 	}
-	m.ValidateRequestObjectSignature = types.BoolValue(c.ValidateRequestObjectSignature)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.ScopeValidators); err == nil {
@@ -127,7 +124,6 @@ func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c
 	if encoded, err := json.Marshal(c.Subject); err == nil {
 		m.Subject = jsontypes.NewNormalizedValue(string(encoded))
 	}
-	m.IsFAPIApplication = types.BoolValue(c.IsFAPIApplication)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.CibaAuthenticationRequest); err == nil {

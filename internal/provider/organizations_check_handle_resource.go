@@ -38,7 +38,7 @@ func (r *OrganizationsCheckHandleResource) Schema(_ context.Context, _ resource.
 	resp.Schema = schema.Schema{
 		Description: "Manages a organizations_check_handle resource.",
 		Attributes: map[string]schema.Attribute{
-			"available": schema.BoolAttribute{
+			"available": schema.StringAttribute{
 				Computed:    true,
 				Description: "",
 			},

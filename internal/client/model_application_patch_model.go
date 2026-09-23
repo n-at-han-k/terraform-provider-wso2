@@ -12,8 +12,8 @@ type ApplicationPatchModel struct {
 	LogoutReturnUrl string `json:"logoutReturnUrl,omitempty"`
 	TemplateId string `json:"templateId,omitempty"`
 	TemplateVersion string `json:"templateVersion,omitempty"`
-	EnhancedOrgAuthenticationEnabled bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
-	ApplicationEnabled bool `json:"applicationEnabled,omitempty"`
+	EnhancedOrgAuthenticationEnabled *bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
+	ApplicationEnabled *bool `json:"applicationEnabled,omitempty"`
 	AssociatedRoles *AssociatedRolesConfig `json:"associatedRoles,omitempty"`
 	ClaimConfiguration *ClaimConfiguration `json:"claimConfiguration,omitempty"`
 	AuthenticationSequence *AuthenticationSequence `json:"authenticationSequence,omitempty"`

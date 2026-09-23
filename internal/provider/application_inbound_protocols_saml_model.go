@@ -23,7 +23,7 @@ type ApplicationInboundProtocolsSamlModel struct {
 	SingleLogoutProfile jsontypes.Normalized `tfsdk:"single_logout_profile"`
 	RequestValidation jsontypes.Normalized `tfsdk:"request_validation"`
 	ResponseSigning jsontypes.Normalized `tfsdk:"response_signing"`
-	EnableAssertionQueryProfile types.Bool `tfsdk:"enable_assertion_query_profile"`
+	EnableAssertionQueryProfile types.String `tfsdk:"enable_assertion_query_profile"`
 	MetadataFile types.String `tfsdk:"metadata_file"`
 	MetadataURL types.String `tfsdk:"metadata_url"`
 	ManualConfiguration jsontypes.Normalized `tfsdk:"manual_configuration"`
@@ -86,5 +86,4 @@ func (m *ApplicationInboundProtocolsSamlModel) FromClientModel(c *client.Saml2Se
 	if encoded, err := json.Marshal(c.ResponseSigning); err == nil {
 		m.ResponseSigning = jsontypes.NewNormalizedValue(string(encoded))
 	}
-	m.EnableAssertionQueryProfile = types.BoolValue(c.EnableAssertionQueryProfile)
 }

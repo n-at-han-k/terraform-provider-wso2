@@ -4,7 +4,7 @@ package client
 
 // SingleLogoutProfile - SingleLogoutProfile struct
 type SingleLogoutProfile struct {
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 	LogoutRequestUrl string `json:"logoutRequestUrl,omitempty"`
 	LogoutResponseUrl string `json:"logoutResponseUrl,omitempty"`
 	LogoutMethod string `json:"logoutMethod,omitempty"`

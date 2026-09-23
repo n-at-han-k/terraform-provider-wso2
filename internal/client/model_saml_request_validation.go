@@ -4,6 +4,6 @@ package client
 
 // SamlRequestValidation - SamlRequestValidation struct
 type SamlRequestValidation struct {
-	EnableSignatureValidation bool `json:"enableSignatureValidation,omitempty"`
+	EnableSignatureValidation *bool `json:"enableSignatureValidation,omitempty"`
 	SignatureValidationCertAlias string `json:"signatureValidationCertAlias,omitempty"`
 }

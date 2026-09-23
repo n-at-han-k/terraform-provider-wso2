@@ -6,6 +6,6 @@ package client
 type CibaAuthenticationRequestConfiguration struct {
 	AuthReqExpiryTime int64 `json:"authReqExpiryTime,omitempty"`
 	NotificationChannels []string `json:"notificationChannels,omitempty"`
-	SkipUserValidation bool `json:"skipUserValidation,omitempty"`
-	AllowFederatedUsers bool `json:"allowFederatedUsers,omitempty"`
+	SkipUserValidation *bool `json:"skipUserValidation,omitempty"`
+	AllowFederatedUsers *bool `json:"allowFederatedUsers,omitempty"`
 }

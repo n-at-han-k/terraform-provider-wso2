@@ -13,7 +13,7 @@ import (
 
 // OrganizationApplicationShareModel is the Terraform model for organization_application_share.
 type OrganizationApplicationShareModel struct {
-	ShareWithAllChildren types.Bool `tfsdk:"share_with_all_children"`
+	ShareWithAllChildren types.String `tfsdk:"share_with_all_children"`
 	SharedOrganizations jsontypes.Normalized `tfsdk:"shared_organizations"`
 	OrganizationId types.String `tfsdk:"organization_id"`
 	ApplicationId types.String `tfsdk:"application_id"`
@@ -23,9 +23,6 @@ type OrganizationApplicationShareModel struct {
 // ToClientModel converts a Terraform model to a client model.
 func (m *OrganizationApplicationShareModel) ToClientModel() (*client.OrganizationApplicationSharePostRequest, error) {
 	out := &client.OrganizationApplicationSharePostRequest{}
-	if !m.ShareWithAllChildren.IsNull() && !m.ShareWithAllChildren.IsUnknown() {
-		out.ShareWithAllChildren = m.ShareWithAllChildren.ValueBool()
-	}
 	// A silently dropped field is worse than a loud one: bad JSON here means
 	// the configuration said something this resource cannot send, and the
 	// request would otherwise go out quietly missing it.

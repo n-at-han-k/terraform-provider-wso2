@@ -38,7 +38,7 @@ func (r *TenantLifecycleStatusResource) Schema(_ context.Context, _ resource.Sch
 	resp.Schema = schema.Schema{
 		Description: "Manages a tenant_lifecycle_status resource.",
 		Attributes: map[string]schema.Attribute{
-			"activated": schema.BoolAttribute{
+			"activated": schema.StringAttribute{
 				Optional:    true,
 				Description: "Active status of the tenant.",
 			},

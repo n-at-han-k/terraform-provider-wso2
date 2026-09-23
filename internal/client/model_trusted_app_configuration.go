@@ -4,8 +4,8 @@ package client
 
 // TrustedAppConfiguration - Decides the trusted app configurations for the application.
 type TrustedAppConfiguration struct {
-	IsFIDOTrustedApp bool `json:"isFIDOTrustedApp,omitempty"`
-	IsConsentGranted bool `json:"isConsentGranted,omitempty"`
+	IsFIDOTrustedApp *bool `json:"isFIDOTrustedApp,omitempty"`
+	IsConsentGranted *bool `json:"isConsentGranted,omitempty"`
 	AndroidPackageName string `json:"androidPackageName,omitempty"`
 	AndroidThumbprints []string `json:"androidThumbprints,omitempty"`
 	AppleAppId string `json:"appleAppId,omitempty"`

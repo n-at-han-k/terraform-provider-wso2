@@ -4,17 +4,17 @@ package client
 
 // AdvancedApplicationConfiguration - AdvancedApplicationConfiguration struct
 type AdvancedApplicationConfiguration struct {
-	Saas bool `json:"saas,omitempty"`
-	DiscoverableByEndUsers bool `json:"discoverableByEndUsers,omitempty"`
+	Saas *bool `json:"saas,omitempty"`
+	DiscoverableByEndUsers *bool `json:"discoverableByEndUsers,omitempty"`
 	DiscoverableGroups []DiscoverableGroup `json:"discoverableGroups,omitempty"`
 	Certificate *Certificate `json:"certificate,omitempty"`
-	SkipLoginConsent bool `json:"skipLoginConsent,omitempty"`
-	SkipLogoutConsent bool `json:"skipLogoutConsent,omitempty"`
-	UseExternalConsentPage bool `json:"useExternalConsentPage,omitempty"`
-	ReturnAuthenticatedIdpList bool `json:"returnAuthenticatedIdpList,omitempty"`
-	EnableAuthorization bool `json:"enableAuthorization,omitempty"`
-	Fragment bool `json:"fragment,omitempty"`
-	EnableAPIBasedAuthentication bool `json:"enableAPIBasedAuthentication,omitempty"`
+	SkipLoginConsent *bool `json:"skipLoginConsent,omitempty"`
+	SkipLogoutConsent *bool `json:"skipLogoutConsent,omitempty"`
+	UseExternalConsentPage *bool `json:"useExternalConsentPage,omitempty"`
+	ReturnAuthenticatedIdpList *bool `json:"returnAuthenticatedIdpList,omitempty"`
+	EnableAuthorization *bool `json:"enableAuthorization,omitempty"`
+	Fragment *bool `json:"fragment,omitempty"`
+	EnableAPIBasedAuthentication *bool `json:"enableAPIBasedAuthentication,omitempty"`
 	AttestationMetaData *AdvancedApplicationConfigurationAttestationMetaData `json:"attestationMetaData,omitempty"`
 	TrustedAppConfiguration *TrustedAppConfiguration `json:"trustedAppConfiguration,omitempty"`
 	AdditionalSpProperties []AdditionalSpProperty `json:"additionalSpProperties,omitempty"`

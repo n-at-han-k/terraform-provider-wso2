@@ -4,7 +4,7 @@ package client
 
 // SamlAttributeProfile - SamlAttributeProfile struct
 type SamlAttributeProfile struct {
-	Enabled bool `json:"enabled,omitempty"`
-	AlwaysIncludeAttributesInResponse bool `json:"alwaysIncludeAttributesInResponse,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
+	AlwaysIncludeAttributesInResponse *bool `json:"alwaysIncludeAttributesInResponse,omitempty"`
 	NameFormat string `json:"nameFormat,omitempty"`
 }

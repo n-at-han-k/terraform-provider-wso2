@@ -30,7 +30,7 @@ func (d *OrganizationsCheckHandleDataSource) Schema(_ context.Context, _ datasou
 	resp.Schema = schema.Schema{
 		Description: "Fetches a organizations_check_handle data source.",
 		Attributes: map[string]schema.Attribute{
-			"available": schema.BoolAttribute{
+			"available": schema.StringAttribute{
 				Computed:    true,
 				Description: "",
 			},

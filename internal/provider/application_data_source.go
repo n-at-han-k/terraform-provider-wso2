@@ -82,19 +82,19 @@ func (d *ApplicationDataSource) Schema(_ context.Context, _ datasource.SchemaReq
 				Computed:    true,
 				Description: "Version of the template used to create the application.",
 			},
-			"is_management_app": schema.BoolAttribute{
+			"is_management_app": schema.StringAttribute{
 				Computed:    true,
 				Description: "Decides whether the application used to access System APIs",
 			},
-			"is_b2_b_self_service_app": schema.BoolAttribute{
+			"is_b2_b_self_service_app": schema.StringAttribute{
 				Computed:    true,
 				Description: "Decides whether the application used to for B2B self service",
 			},
-			"enhanced_org_authentication_enabled": schema.BoolAttribute{
+			"enhanced_org_authentication_enabled": schema.StringAttribute{
 				Computed:    true,
 				Description: "Decides whether the enhanced organization authentication is enabled for the application.",
 			},
-			"application_enabled": schema.BoolAttribute{
+			"application_enabled": schema.StringAttribute{
 				Computed:    true,
 				Description: "Decides whether the application is enabled.",
 			},

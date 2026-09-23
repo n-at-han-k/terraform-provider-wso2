@@ -670,6 +670,17 @@ public class TerraformCodegen extends TerraformProviderCodegen {
                 // `allOf: [$ref: FapiProfile]` -- which is how this document
                 // attaches a description to a ref -- is not flagged a model,
                 // and went out as "fapiProfile":{} regardless.
+                // A BOOL IS A POINTER TOO, for the same reason and a worse
+                // consequence: `omitempty` cannot tell false from unset, so
+                // `supportPlainTransformAlgorithm = false` was dropped from
+                // the body -- and WSO2 answers a MISSING one with a 500,
+                // APP-65006 "server encountered an unexpected error". Sending
+                // it explicitly is a 201. Verified against the server both
+                // ways.
+                if ("bool".equals(property.dataType)) {
+                    property.dataType = "*bool";
+                }
+
                 if ((property.isModel || property.complexType != null)
                         && !property.isArray && !property.isMap
                         && !property.dataType.startsWith("*")) {

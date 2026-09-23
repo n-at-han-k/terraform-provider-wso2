@@ -4,6 +4,6 @@ package client
 
 // OrganizationApplicationSharePostRequest - OrganizationApplicationSharePostRequest struct
 type OrganizationApplicationSharePostRequest struct {
-	ShareWithAllChildren bool `json:"shareWithAllChildren,omitempty"`
+	ShareWithAllChildren *bool `json:"shareWithAllChildren,omitempty"`
 	SharedOrganizations []string `json:"sharedOrganizations,omitempty"`
 }

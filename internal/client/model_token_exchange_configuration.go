@@ -4,5 +4,5 @@ package client
 
 // TokenExchangeConfiguration - TokenExchangeConfiguration struct
 type TokenExchangeConfiguration struct {
-	RestrictScopeIssuanceForFederatedTokens bool `json:"restrictScopeIssuanceForFederatedTokens,omitempty"`
+	RestrictScopeIssuanceForFederatedTokens *bool `json:"restrictScopeIssuanceForFederatedTokens,omitempty"`
 }

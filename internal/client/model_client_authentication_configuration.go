@@ -5,7 +5,7 @@ package client
 // ClientAuthenticationConfiguration - ClientAuthenticationConfiguration struct
 type ClientAuthenticationConfiguration struct {
 	TokenEndpointAuthMethod string `json:"tokenEndpointAuthMethod,omitempty"`
-	TokenEndpointAllowReusePvtKeyJwt bool `json:"tokenEndpointAllowReusePvtKeyJwt,omitempty"`
+	TokenEndpointAllowReusePvtKeyJwt *bool `json:"tokenEndpointAllowReusePvtKeyJwt,omitempty"`
 	TokenEndpointAuthSigningAlg string `json:"tokenEndpointAuthSigningAlg,omitempty"`
 	TlsClientAuthSubjectDn string `json:"tlsClientAuthSubjectDn,omitempty"`
 }

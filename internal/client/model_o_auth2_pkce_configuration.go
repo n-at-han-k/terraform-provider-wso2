@@ -4,6 +4,6 @@ package client
 
 // OAuth2PkceConfiguration - OAuth2PkceConfiguration struct
 type OAuth2PkceConfiguration struct {
-	Mandatory bool `json:"mandatory,omitempty"`
-	SupportPlainTransformAlgorithm bool `json:"supportPlainTransformAlgorithm,omitempty"`
+	Mandatory *bool `json:"mandatory,omitempty"`
+	SupportPlainTransformAlgorithm *bool `json:"supportPlainTransformAlgorithm,omitempty"`
 }

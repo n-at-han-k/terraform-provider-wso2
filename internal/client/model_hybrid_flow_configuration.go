@@ -4,6 +4,6 @@ package client
 
 // HybridFlowConfiguration - HybridFlowConfiguration struct
 type HybridFlowConfiguration struct {
-	Enable bool `json:"enable,omitempty"`
+	Enable *bool `json:"enable,omitempty"`
 	ResponseType string `json:"responseType,omitempty"`
 }

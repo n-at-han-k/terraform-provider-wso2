@@ -4,6 +4,6 @@ package client
 
 // SubjectTokenConfiguration - SubjectTokenConfiguration struct
 type SubjectTokenConfiguration struct {
-	Enable bool `json:"enable,omitempty"`
+	Enable *bool `json:"enable,omitempty"`
 	ApplicationSubjectTokenExpiryInSeconds int32 `json:"applicationSubjectTokenExpiryInSeconds,omitempty"`
 }

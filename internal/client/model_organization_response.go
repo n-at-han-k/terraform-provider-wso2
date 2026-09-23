@@ -14,6 +14,6 @@ type OrganizationResponse struct {
 	LastModified string `json:"lastModified,omitempty"`
 	Type string `json:"type,omitempty"`
 	Parent *ParentOrganization `json:"parent,omitempty"`
-	HasChildren bool `json:"hasChildren,omitempty"`
+	HasChildren *bool `json:"hasChildren,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 }

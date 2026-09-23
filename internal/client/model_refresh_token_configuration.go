@@ -5,9 +5,9 @@ package client
 // RefreshTokenConfiguration - RefreshTokenConfiguration struct
 type RefreshTokenConfiguration struct {
 	ExpiryInSeconds int64 `json:"expiryInSeconds,omitempty"`
-	ExtendRenewedRefreshTokenExpiryTime bool `json:"extendRenewedRefreshTokenExpiryTime,omitempty"`
-	RenewRefreshToken bool `json:"renewRefreshToken,omitempty"`
-	GracefulRefreshTokenRotationEnabled bool `json:"gracefulRefreshTokenRotationEnabled,omitempty"`
+	ExtendRenewedRefreshTokenExpiryTime *bool `json:"extendRenewedRefreshTokenExpiryTime,omitempty"`
+	RenewRefreshToken *bool `json:"renewRefreshToken,omitempty"`
+	GracefulRefreshTokenRotationEnabled *bool `json:"gracefulRefreshTokenRotationEnabled,omitempty"`
 	GracefulRefreshTokenRotationValidityPeriod int32 `json:"gracefulRefreshTokenRotationValidityPeriod,omitempty"`
 	GracefulRefreshTokenReuseLimit int32 `json:"gracefulRefreshTokenReuseLimit,omitempty"`
 }

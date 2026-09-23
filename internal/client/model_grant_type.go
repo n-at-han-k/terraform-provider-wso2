@@ -6,5 +6,5 @@ package client
 type GrantType struct {
 	Name string `json:"name,omitempty"`
 	DisplayName string `json:"displayName,omitempty"`
-	PublicClientAllowed bool `json:"publicClientAllowed,omitempty"`
+	PublicClientAllowed *bool `json:"publicClientAllowed,omitempty"`
 }

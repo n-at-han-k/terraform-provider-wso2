@@ -4,5 +4,5 @@ package client
 
 // PushAuthorizationRequestConfiguration - PushAuthorizationRequestConfiguration struct
 type PushAuthorizationRequestConfiguration struct {
-	RequirePushAuthorizationRequest bool `json:"requirePushAuthorizationRequest,omitempty"`
+	RequirePushAuthorizationRequest *bool `json:"requirePushAuthorizationRequest,omitempty"`
 }

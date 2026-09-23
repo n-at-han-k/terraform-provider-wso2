@@ -5,8 +5,8 @@ package client
 // SingleSignOnProfile - SingleSignOnProfile struct
 type SingleSignOnProfile struct {
 	Bindings []string `json:"bindings,omitempty"`
-	EnableSignatureValidationForArtifactBinding bool `json:"enableSignatureValidationForArtifactBinding,omitempty"`
+	EnableSignatureValidationForArtifactBinding *bool `json:"enableSignatureValidationForArtifactBinding,omitempty"`
 	AttributeConsumingServiceIndex string `json:"attributeConsumingServiceIndex,omitempty"`
-	EnableIdpInitiatedSingleSignOn bool `json:"enableIdpInitiatedSingleSignOn,omitempty"`
+	EnableIdpInitiatedSingleSignOn *bool `json:"enableIdpInitiatedSingleSignOn,omitempty"`
 	Assertion *SamlAssertionConfiguration `json:"assertion,omitempty"`
 }

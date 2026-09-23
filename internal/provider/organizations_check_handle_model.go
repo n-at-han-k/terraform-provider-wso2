@@ -9,7 +9,7 @@ import (
 
 // OrganizationsCheckHandleModel is the Terraform model for organizations_check_handle.
 type OrganizationsCheckHandleModel struct {
-	Available types.Bool `tfsdk:"available"`
+	Available types.String `tfsdk:"available"`
 	OrgHandle types.String `tfsdk:"org_handle"`
 }
 
@@ -24,5 +24,4 @@ func (m *OrganizationsCheckHandleModel) ToClientModel() (*client.OrganizationHan
 
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsCheckHandleModel) FromClientModel(c *client.OrganizationCheckResponse) {
-	m.Available = types.BoolValue(c.Available)
 }

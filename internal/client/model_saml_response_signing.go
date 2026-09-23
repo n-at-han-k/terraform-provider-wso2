@@ -4,6 +4,6 @@ package client
 
 // SamlResponseSigning - SamlResponseSigning struct
 type SamlResponseSigning struct {
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 	SigningAlgorithm string `json:"signingAlgorithm,omitempty"`
 }

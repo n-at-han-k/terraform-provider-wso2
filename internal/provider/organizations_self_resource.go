@@ -81,7 +81,7 @@ func (r *OrganizationsSelfResource) Schema(_ context.Context, _ resource.SchemaR
 				Optional:    true,
 				Description: "",
 			},
-			"has_children": schema.BoolAttribute{
+			"has_children": schema.StringAttribute{
 				Optional:    true,
 				Description: "",
 			},

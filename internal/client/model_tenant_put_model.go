@@ -4,5 +4,5 @@ package client
 
 // TenantPutModel - TenantPutModel struct
 type TenantPutModel struct {
-	Activated bool `json:"activated,omitempty"`
+	Activated *bool `json:"activated,omitempty"`
 }

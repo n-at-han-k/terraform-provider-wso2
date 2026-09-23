@@ -5,5 +5,5 @@ package client
 // RequestedClaimConfiguration - User claims that need to be sent back to the application. If the claim mappings are local, use local claim URIs. If the custom claim mappings are configured, use the mapped application claim URI
 type RequestedClaimConfiguration struct {
 	Claim *Claim `json:"claim,omitempty"`
-	Mandatory bool `json:"mandatory,omitempty"`
+	Mandatory *bool `json:"mandatory,omitempty"`
 }

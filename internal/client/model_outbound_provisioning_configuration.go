@@ -6,7 +6,7 @@ package client
 type OutboundProvisioningConfiguration struct {
 	Idp string `json:"idp,omitempty"`
 	Connector string `json:"connector,omitempty"`
-	Blocking bool `json:"blocking,omitempty"`
-	Rules bool `json:"rules,omitempty"`
-	Jit bool `json:"jit,omitempty"`
+	Blocking *bool `json:"blocking,omitempty"`
+	Rules *bool `json:"rules,omitempty"`
+	Jit *bool `json:"jit,omitempty"`
 }

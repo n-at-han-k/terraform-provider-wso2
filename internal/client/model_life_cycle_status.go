@@ -4,5 +4,5 @@ package client
 
 // LifeCycleStatus - LifeCycleStatus struct
 type LifeCycleStatus struct {
-	Activated bool `json:"activated,omitempty"`
+	Activated *bool `json:"activated,omitempty"`
 }

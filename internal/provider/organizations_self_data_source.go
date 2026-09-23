@@ -75,7 +75,7 @@ func (d *OrganizationsSelfDataSource) Schema(_ context.Context, _ datasource.Sch
 				Computed:    true,
 				Description: "",
 			},
-			"has_children": schema.BoolAttribute{
+			"has_children": schema.StringAttribute{
 				Computed:    true,
 				Description: "",
 			},

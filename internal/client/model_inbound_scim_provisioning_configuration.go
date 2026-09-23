@@ -4,6 +4,6 @@ package client
 
 // InboundScimProvisioningConfiguration - InboundScimProvisioningConfiguration struct
 type InboundScimProvisioningConfiguration struct {
-	ProxyMode bool `json:"proxyMode,omitempty"`
+	ProxyMode *bool `json:"proxyMode,omitempty"`
 	ProvisioningUserstoreDomain string `json:"provisioningUserstoreDomain,omitempty"`
 }

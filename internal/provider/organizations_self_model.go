@@ -22,7 +22,7 @@ type OrganizationsSelfModel struct {
 	LastModified types.String `tfsdk:"last_modified"`
 	Type types.String `tfsdk:"type"`
 	Parent jsontypes.Normalized `tfsdk:"parent"`
-	HasChildren types.Bool `tfsdk:"has_children"`
+	HasChildren types.String `tfsdk:"has_children"`
 	Attributes jsontypes.Normalized `tfsdk:"attributes"`
 }
 
@@ -43,7 +43,6 @@ func (m *OrganizationsSelfModel) FromClientModel(c *client.OrganizationResponse)
 	if encoded, err := json.Marshal(c.Parent); err == nil {
 		m.Parent = jsontypes.NewNormalizedValue(string(encoded))
 	}
-	m.HasChildren = types.BoolValue(c.HasChildren)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.Attributes); err == nil {

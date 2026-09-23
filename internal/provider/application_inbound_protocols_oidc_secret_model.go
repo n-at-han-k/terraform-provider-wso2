@@ -14,7 +14,7 @@ type ApplicationInboundProtocolsOidcSecretModel struct {
 	ExpiresAt types.Int64 `tfsdk:"expires_at"`
 	CreatedAt types.Int64 `tfsdk:"created_at"`
 	Status types.String `tfsdk:"status"`
-	Latest types.Bool `tfsdk:"latest"`
+	Latest types.String `tfsdk:"latest"`
 	ApplicationId types.String `tfsdk:"application_id"`
 }
 
@@ -34,5 +34,4 @@ func (m *ApplicationInboundProtocolsOidcSecretModel) FromClientModel(c *client.C
 	m.ExpiresAt = types.Int64Value(int64(c.ExpiresAt))
 	m.CreatedAt = types.Int64Value(int64(c.CreatedAt))
 	m.Status = types.StringValue(c.Status)
-	m.Latest = types.BoolValue(c.Latest)
 }

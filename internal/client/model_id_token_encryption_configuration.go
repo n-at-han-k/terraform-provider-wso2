@@ -4,7 +4,7 @@ package client
 
 // IdTokenEncryptionConfiguration - IdTokenEncryptionConfiguration struct
 type IdTokenEncryptionConfiguration struct {
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 	Algorithm string `json:"algorithm,omitempty"`
 	Method string `json:"method,omitempty"`
 }

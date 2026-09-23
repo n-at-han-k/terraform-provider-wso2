@@ -13,7 +13,7 @@ type GetOrganizationResponse struct {
 	Created string `json:"created,omitempty"`
 	LastModified string `json:"lastModified,omitempty"`
 	Type string `json:"type,omitempty"`
-	HasChildren bool `json:"hasChildren,omitempty"`
+	HasChildren *bool `json:"hasChildren,omitempty"`
 	Parent *ParentOrganization `json:"parent,omitempty"`
 	Attributes []OrganizationAttribute `json:"attributes,omitempty"`
 	Permissions []string `json:"permissions,omitempty"`

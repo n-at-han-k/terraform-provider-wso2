@@ -4,7 +4,7 @@ package client
 
 // AssertionEncryptionConfiguration - AssertionEncryptionConfiguration struct
 type AssertionEncryptionConfiguration struct {
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 	AssertionEncryptionAlgorithm string `json:"assertionEncryptionAlgorithm,omitempty"`
 	KeyEncryptionAlgorithm string `json:"keyEncryptionAlgorithm,omitempty"`
 }

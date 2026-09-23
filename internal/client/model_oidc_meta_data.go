@@ -15,7 +15,7 @@ type OidcMetaData struct {
 	AccessTokenType *MetadataProperty `json:"accessTokenType,omitempty"`
 	AccessTokenBindingType *MetadataProperty `json:"accessTokenBindingType,omitempty"`
 	TokenEndpointAuthMethod *ClientAuthenticationMethodMetadata `json:"tokenEndpointAuthMethod,omitempty"`
-	TokenEndpointAllowReusePvtKeyJwt bool `json:"tokenEndpointAllowReusePvtKeyJwt,omitempty"`
+	TokenEndpointAllowReusePvtKeyJwt *bool `json:"tokenEndpointAllowReusePvtKeyJwt,omitempty"`
 	TokenEndpointSignatureAlgorithm *MetadataProperty `json:"tokenEndpointSignatureAlgorithm,omitempty"`
 	IdTokenSignatureAlgorithm *MetadataProperty `json:"idTokenSignatureAlgorithm,omitempty"`
 	RequestObjectSignatureAlgorithm *MetadataProperty `json:"requestObjectSignatureAlgorithm,omitempty"`

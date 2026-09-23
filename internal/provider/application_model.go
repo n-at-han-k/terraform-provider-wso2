@@ -25,10 +25,10 @@ type ApplicationModel struct {
 	Realm types.String `tfsdk:"realm"`
 	TemplateId types.String `tfsdk:"template_id"`
 	TemplateVersion types.String `tfsdk:"template_version"`
-	IsManagementApp types.Bool `tfsdk:"is_management_app"`
-	IsB2BSelfServiceApp types.Bool `tfsdk:"is_b2_b_self_service_app"`
-	EnhancedOrgAuthenticationEnabled types.Bool `tfsdk:"enhanced_org_authentication_enabled"`
-	ApplicationEnabled types.Bool `tfsdk:"application_enabled"`
+	IsManagementApp types.String `tfsdk:"is_management_app"`
+	IsB2BSelfServiceApp types.String `tfsdk:"is_b2_b_self_service_app"`
+	EnhancedOrgAuthenticationEnabled types.String `tfsdk:"enhanced_org_authentication_enabled"`
+	ApplicationEnabled types.String `tfsdk:"application_enabled"`
 	AssociatedRoles jsontypes.Normalized `tfsdk:"associated_roles"`
 	ClaimConfiguration jsontypes.Normalized `tfsdk:"claim_configuration"`
 	InboundProtocols jsontypes.Normalized `tfsdk:"inbound_protocols"`
@@ -65,18 +65,6 @@ func (m *ApplicationModel) ToClientModel() (*client.ApplicationModel, error) {
 	}
 	if !m.TemplateVersion.IsNull() && !m.TemplateVersion.IsUnknown() {
 		out.TemplateVersion = m.TemplateVersion.ValueString()
-	}
-	if !m.IsManagementApp.IsNull() && !m.IsManagementApp.IsUnknown() {
-		out.IsManagementApp = m.IsManagementApp.ValueBool()
-	}
-	if !m.IsB2BSelfServiceApp.IsNull() && !m.IsB2BSelfServiceApp.IsUnknown() {
-		out.IsB2BSelfServiceApp = m.IsB2BSelfServiceApp.ValueBool()
-	}
-	if !m.EnhancedOrgAuthenticationEnabled.IsNull() && !m.EnhancedOrgAuthenticationEnabled.IsUnknown() {
-		out.EnhancedOrgAuthenticationEnabled = m.EnhancedOrgAuthenticationEnabled.ValueBool()
-	}
-	if !m.ApplicationEnabled.IsNull() && !m.ApplicationEnabled.IsUnknown() {
-		out.ApplicationEnabled = m.ApplicationEnabled.ValueBool()
 	}
 	// A silently dropped field is worse than a loud one: bad JSON here means
 	// the configuration said something this resource cannot send, and the
@@ -143,10 +131,6 @@ func (m *ApplicationModel) FromClientModel(c *client.ApplicationResponseModel) {
 	m.Realm = types.StringValue(c.Realm)
 	m.TemplateId = types.StringValue(c.TemplateId)
 	m.TemplateVersion = types.StringValue(c.TemplateVersion)
-	m.IsManagementApp = types.BoolValue(c.IsManagementApp)
-	m.IsB2BSelfServiceApp = types.BoolValue(c.IsB2BSelfServiceApp)
-	m.EnhancedOrgAuthenticationEnabled = types.BoolValue(c.EnhancedOrgAuthenticationEnabled)
-	m.ApplicationEnabled = types.BoolValue(c.ApplicationEnabled)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
 	if encoded, err := json.Marshal(c.AssociatedRoles); err == nil {

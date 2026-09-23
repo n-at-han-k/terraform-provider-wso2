@@ -5,8 +5,8 @@ package client
 // SubjectConfig - SubjectConfig struct
 type SubjectConfig struct {
 	Claim *Claim `json:"claim,omitempty"`
-	IncludeUserDomain bool `json:"includeUserDomain,omitempty"`
-	IncludeTenantDomain bool `json:"includeTenantDomain,omitempty"`
-	UseMappedLocalSubject bool `json:"useMappedLocalSubject,omitempty"`
-	MappedLocalSubjectMandatory bool `json:"mappedLocalSubjectMandatory,omitempty"`
+	IncludeUserDomain *bool `json:"includeUserDomain,omitempty"`
+	IncludeTenantDomain *bool `json:"includeTenantDomain,omitempty"`
+	UseMappedLocalSubject *bool `json:"useMappedLocalSubject,omitempty"`
+	MappedLocalSubjectMandatory *bool `json:"mappedLocalSubjectMandatory,omitempty"`
 }

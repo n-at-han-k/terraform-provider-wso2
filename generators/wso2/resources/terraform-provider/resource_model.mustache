@@ -60,7 +60,10 @@ func (m *{{resourceClassName}}Model) ToClientModel() (*client.{{requestModel}}, 
 {{/isFloat64}}
 {{#isBool}}
 	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
-		out.{{goName}} = m.{{goName}}.ValueBool()
+		// Addressed, not assigned: the client field is a *bool so that an
+		// explicit false is sent rather than dropped by `omitempty`.
+		{{goName}} := m.{{goName}}.ValueBool()
+		out.{{goName}} = &{{goName}}
 	}
 {{/isBool}}
 {{#isJson}}
@@ -94,7 +97,9 @@ func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}
 	m.{{goName}} = types.Float64Value(float64(c.{{goName}}))
 {{/isFloat64}}
 {{#isBool}}
-	m.{{goName}} = types.BoolValue(c.{{goName}})
+	if c.{{goName}} != nil {
+		m.{{goName}} = types.BoolValue(*c.{{goName}})
+	}
 {{/isBool}}
 {{#isJson}}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

@@ -7,10 +7,10 @@ type CustomInboundProtocolProperty struct {
 	Name string `json:"name,omitempty"`
 	DisplayName string `json:"displayName,omitempty"`
 	Type string `json:"type,omitempty"`
-	Required bool `json:"required,omitempty"`
+	Required *bool `json:"required,omitempty"`
 	AvailableValues []string `json:"availableValues,omitempty"`
 	DefaultValue string `json:"defaultValue,omitempty"`
 	ValidationRegex string `json:"validationRegex,omitempty"`
 	DisplayOrder int32 `json:"displayOrder,omitempty"`
-	IsConfidential bool `json:"isConfidential,omitempty"`
+	IsConfidential *bool `json:"isConfidential,omitempty"`
 }

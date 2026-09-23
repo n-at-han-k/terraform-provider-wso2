@@ -4,5 +4,5 @@ package client
 
 // OrganizationCheckResponse - OrganizationCheckResponse struct
 type OrganizationCheckResponse struct {
-	Available bool `json:"available,omitempty"`
+	Available *bool `json:"available,omitempty"`
 }

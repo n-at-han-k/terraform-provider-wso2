@@ -16,10 +16,10 @@ type ApplicationResponseModel struct {
 	Realm string `json:"realm,omitempty"`
 	TemplateId string `json:"templateId,omitempty"`
 	TemplateVersion string `json:"templateVersion,omitempty"`
-	IsManagementApp bool `json:"isManagementApp,omitempty"`
-	IsB2BSelfServiceApp bool `json:"isB2BSelfServiceApp,omitempty"`
-	EnhancedOrgAuthenticationEnabled bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
-	ApplicationEnabled bool `json:"applicationEnabled,omitempty"`
+	IsManagementApp *bool `json:"isManagementApp,omitempty"`
+	IsB2BSelfServiceApp *bool `json:"isB2BSelfServiceApp,omitempty"`
+	EnhancedOrgAuthenticationEnabled *bool `json:"enhancedOrgAuthenticationEnabled,omitempty"`
+	ApplicationEnabled *bool `json:"applicationEnabled,omitempty"`
 	AssociatedRoles *AssociatedRolesConfig `json:"associatedRoles,omitempty"`
 	ClaimConfiguration *ClaimConfiguration `json:"claimConfiguration,omitempty"`
 	InboundProtocols []InboundProtocolListItem `json:"inboundProtocols,omitempty"`

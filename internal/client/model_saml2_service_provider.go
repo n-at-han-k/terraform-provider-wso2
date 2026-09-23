@@ -14,5 +14,5 @@ type Saml2ServiceProvider struct {
 	SingleLogoutProfile *SingleLogoutProfile `json:"singleLogoutProfile,omitempty"`
 	RequestValidation *SamlRequestValidation `json:"requestValidation,omitempty"`
 	ResponseSigning *SamlResponseSigning `json:"responseSigning,omitempty"`
-	EnableAssertionQueryProfile bool `json:"enableAssertionQueryProfile,omitempty"`
+	EnableAssertionQueryProfile *bool `json:"enableAssertionQueryProfile,omitempty"`
 }

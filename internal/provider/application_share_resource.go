@@ -42,7 +42,7 @@ func (r *ApplicationShareResource) Schema(_ context.Context, _ resource.SchemaRe
 	resp.Schema = schema.Schema{
 		Description: "Manages a application_share resource.",
 		Attributes: map[string]schema.Attribute{
-			"share_with_all_children": schema.BoolAttribute{
+			"share_with_all_children": schema.StringAttribute{
 				Optional:    true,
 				Description: "",
 			},

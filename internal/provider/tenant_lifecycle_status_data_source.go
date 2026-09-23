@@ -30,7 +30,7 @@ func (d *TenantLifecycleStatusDataSource) Schema(_ context.Context, _ datasource
 	resp.Schema = schema.Schema{
 		Description: "Fetches a tenant_lifecycle_status data source.",
 		Attributes: map[string]schema.Attribute{
-			"activated": schema.BoolAttribute{
+			"activated": schema.StringAttribute{
 				Computed:    true,
 				Description: "Active status of the tenant.",
 			},

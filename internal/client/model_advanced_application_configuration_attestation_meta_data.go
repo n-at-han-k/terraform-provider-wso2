@@ -4,7 +4,7 @@ package client
 
 // AdvancedApplicationConfigurationAttestationMetaData - Decides the client attestation meta data for the application.
 type AdvancedApplicationConfigurationAttestationMetaData struct {
-	EnableClientAttestation bool `json:"enableClientAttestation,omitempty"`
+	EnableClientAttestation *bool `json:"enableClientAttestation,omitempty"`
 	AndroidPackageName string `json:"androidPackageName,omitempty"`
 	AndroidAttestationServiceCredentials map[string]interface{} `json:"androidAttestationServiceCredentials,omitempty"`
 	AppleAppId string `json:"appleAppId,omitempty"`

@@ -4,6 +4,6 @@ package client
 
 // IdpInitiatedSingleLogout - IdpInitiatedSingleLogout struct
 type IdpInitiatedSingleLogout struct {
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 	ReturnToUrls []string `json:"returnToUrls,omitempty"`
 }

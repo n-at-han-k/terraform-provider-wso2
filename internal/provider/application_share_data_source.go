@@ -31,7 +31,7 @@ func (d *ApplicationShareDataSource) Schema(_ context.Context, _ datasource.Sche
 	resp.Schema = schema.Schema{
 		Description: "Fetches a application_share data source.",
 		Attributes: map[string]schema.Attribute{
-			"share_with_all_children": schema.BoolAttribute{
+			"share_with_all_children": schema.StringAttribute{
 				Computed:    true,
 				Description: "",
 			},
