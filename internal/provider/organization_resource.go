@@ -48,10 +48,12 @@ func (r *OrganizationResource) Schema(_ context.Context, _ resource.SchemaReques
 				Description: "",
 			},
 			"org_handle": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"description": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
@@ -72,6 +74,7 @@ func (r *OrganizationResource) Schema(_ context.Context, _ resource.SchemaReques
 				Description: "",
 			},
 			"type": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
@@ -86,6 +89,7 @@ func (r *OrganizationResource) Schema(_ context.Context, _ resource.SchemaReques
 			},
 			"attributes": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},

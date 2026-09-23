@@ -44,6 +44,7 @@ func (r *TenantResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				Description: "tenant id of the tenant owner.",
 			},
 			"name": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "Name of the tenant.",
 			},

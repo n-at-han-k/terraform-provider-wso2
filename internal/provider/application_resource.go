@@ -40,6 +40,7 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 		Description: "Manages a application resource.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
@@ -48,6 +49,7 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "",
 			},
 			"description": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
@@ -56,14 +58,17 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "",
 			},
 			"image_url": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"access_url": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"logout_return_url": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
@@ -80,36 +85,44 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 				Description: "",
 			},
 			"template_id": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"template_version": schema.StringAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "Version of the template used to create the application.",
 			},
 			"is_management_app": schema.BoolAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "Decides whether the application used to access System APIs",
 			},
 			"is_b2_b_self_service_app": schema.BoolAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "Decides whether the application used to for B2B self service",
 			},
 			"enhanced_org_authentication_enabled": schema.BoolAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "Decides whether the enhanced organization authentication is enabled for the application.",
 			},
 			"application_enabled": schema.BoolAttribute{
+				Computed:    true,
 				Optional:    true,
 				Description: "Decides whether the application is enabled.",
 			},
 			"associated_roles": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"claim_configuration": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
@@ -120,16 +133,19 @@ func (r *ApplicationResource) Schema(_ context.Context, _ resource.SchemaRequest
 			},
 			"authentication_sequence": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"advanced_configurations": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},
 			"provisioning_configurations": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
+				Computed:    true,
 				Optional:    true,
 				Description: "",
 			},

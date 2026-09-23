@@ -210,9 +210,14 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             // With no create operation there is nothing to infer from, and
             // upstream's answer stands.
             if (request != null) {
+                // Optional AND Computed where the create body takes it without
+                // insisting and the server answers it anyway -- a tenant's
+                // `name` is not required and comes back as the domain. Optional
+                // alone plans null and then the read answers a value, which is
+                // "Provider produced inconsistent result after apply".
                 attribute.put("isRequired", writes != null && writes.required);
                 attribute.put("isOptional", writes != null && !writes.required);
-                attribute.put("isComputed", writes == null);
+                attribute.put("isComputed", writes == null || !writes.required);
             }
 
             // The server answers this one, so state can be refreshed from it --
