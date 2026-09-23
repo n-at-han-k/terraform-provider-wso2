@@ -218,6 +218,15 @@ func (r *ApplicationResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
+	// A resource with no identifier is not a resource. Without this the read
+	// interpolates an empty id and asks the COLLECTION endpoint, which answers
+	// 200 and a list -- so a state written before the id was known would look
+	// healthy forever instead of being adopted again.
+	if state.Id.ValueString() == "" {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	respBody, err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/applications/%v", state.Id.ValueString()), nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading application", err.Error())

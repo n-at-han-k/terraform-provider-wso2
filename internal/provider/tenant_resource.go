@@ -145,6 +145,15 @@ func (r *TenantResource) Read(ctx context.Context, req resource.ReadRequest, res
 		return
 	}
 
+	// A resource with no identifier is not a resource. Without this the read
+	// interpolates an empty id and asks the COLLECTION endpoint, which answers
+	// 200 and a list -- so a state written before the id was known would look
+	// healthy forever instead of being adopted again.
+	if state.Id.ValueString() == "" {
+		resp.State.RemoveResource(ctx)
+		return
+	}
+
 	respBody, err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/tenants/%v", state.Id.ValueString()), nil)
 	if err != nil {
 		resp.Diagnostics.AddError("Error reading tenant", err.Error())
@@ -163,12 +172,39 @@ func (r *TenantResource) Read(ctx context.Context, req resource.ReadRequest, res
 }
 
 func (r *TenantResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	// No update endpoint available; persist the planned values into state.
+	// No update endpoint: nothing here can change on the server, so the plan
+	// stands. But EVERY Computed attribute is unknown in a plan, and a provider
+	// must answer known values after an apply -- persisting the plan as it
+	// stands earns "Provider returned invalid result object after apply". The
+	// known values come from a read.
 	var plan TenantModel
 	resp.Diagnostics.Append(req.Plan.Get(ctx, &plan)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	// The identifier off STATE, not the plan: it is Computed, so the plan has
+	// it as unknown, and it cannot change on an update anyway.
+	var state TenantModel
+	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	respBody, err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/tenants/%v", state.Id.ValueString()), nil)
+	if err != nil {
+		resp.Diagnostics.AddError("Error reading tenant", err.Error())
+		return
+	}
+
+	var result client.TenantResponseModel
+	if err := json.Unmarshal(respBody, &result); err != nil {
+		resp.Diagnostics.AddError("Error parsing response", err.Error())
+		return
+	}
+
+	plan.FromClientModel(&result)
+
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)
 }
 

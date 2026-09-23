@@ -148,6 +148,11 @@ public class TerraformCodegen extends TerraformProviderCodegen {
 
         reshapeAttributes(processed.getOperations(), allModels);
 
+        // Whether the identifier is a string, which decides how a template can
+        // ask whether it is empty.
+        processed.getOperations().put("idIsString",
+                ".ValueString()".equals(processed.getOperations().get("idFieldValueAccessor")));
+
         return processed;
     }
 
