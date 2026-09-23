@@ -97,8 +97,14 @@ func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}
 	m.{{goName}} = types.Float64Value(float64(c.{{goName}}))
 {{/isFloat64}}
 {{#isBool}}
+	// A bool the server does not answer leaves the pointer nil, and a Computed
+	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
+	// value ... all values must be known after apply". Unknown becomes null; a
+	// value the plan already knows is left alone.
 	if c.{{goName}} != nil {
 		m.{{goName}} = types.BoolValue(*c.{{goName}})
+	} else if m.{{goName}}.IsUnknown() {
+		m.{{goName}} = types.BoolNull()
 	}
 {{/isBool}}
 {{#isJson}}
