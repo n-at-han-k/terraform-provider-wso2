@@ -158,13 +158,27 @@ func (r *OrganizationsSelfResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	var result client.OrganizationResponse
-	if err := json.Unmarshal(respBody, &result); err != nil {
-		resp.Diagnostics.AddError("Error parsing response", err.Error())
-		return
+	// An update that answers no body: PUT /tenants/{id}/owners/{id} is a 200
+	// and nothing, every time. Unmarshalling that is "Error parsing response"
+	// AFTER the server has already accepted the change -- so the write looks
+	// like a failure and the new value never reaches state.
+	if len(respBody) == 0 {
+		respBody, err = r.client.DoRequest(ctx, "GET", "/organizations/self", nil)
+		if err != nil {
+			resp.Diagnostics.AddError("Error reading back the updated organizations_self", err.Error())
+			return
+		}
 	}
 
-	plan.FromClientModel(&result)
+	if len(respBody) > 0 {
+		var result client.OrganizationResponse
+		if err := json.Unmarshal(respBody, &result); err != nil {
+			resp.Diagnostics.AddError("Error parsing response", err.Error())
+			return
+		}
+
+		plan.FromClientModel(&result)
+	}
 
 	tflog.Trace(ctx, "updated organizations_self resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)

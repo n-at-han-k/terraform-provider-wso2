@@ -152,13 +152,27 @@ func (r *ApplicationInboundProtocolResource) Update(ctx context.Context, req res
 		return
 	}
 
-	var result client.CustomInboundProtocolConfiguration
-	if err := json.Unmarshal(respBody, &result); err != nil {
-		resp.Diagnostics.AddError("Error parsing response", err.Error())
-		return
+	// An update that answers no body: PUT /tenants/{id}/owners/{id} is a 200
+	// and nothing, every time. Unmarshalling that is "Error parsing response"
+	// AFTER the server has already accepted the change -- so the write looks
+	// like a failure and the new value never reaches state.
+	if len(respBody) == 0 {
+		respBody, err = r.client.DoRequest(ctx, "GET", fmt.Sprintf("/applications/%v/inbound-protocols/%v", state.ApplicationId.ValueString(), state.InboundProtocolId.ValueString()), nil)
+		if err != nil {
+			resp.Diagnostics.AddError("Error reading back the updated application_inbound_protocol", err.Error())
+			return
+		}
 	}
 
-	plan.FromClientModel(&result)
+	if len(respBody) > 0 {
+		var result client.CustomInboundProtocolConfiguration
+		if err := json.Unmarshal(respBody, &result); err != nil {
+			resp.Diagnostics.AddError("Error parsing response", err.Error())
+			return
+		}
+
+		plan.FromClientModel(&result)
+	}
 
 	tflog.Trace(ctx, "updated application_inbound_protocol resource")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &plan)...)

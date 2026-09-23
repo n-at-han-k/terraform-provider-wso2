@@ -287,13 +287,34 @@ func (r *{{resourceClassName}}Resource) Update(ctx context.Context, req resource
 	_ = respBody
 {{/responseModel}}
 {{#responseModel}}
-	var result client.{{responseModel}}
-	if err := json.Unmarshal(respBody, &result); err != nil {
-		resp.Diagnostics.AddError("Error parsing response", err.Error())
-		return
+	// An update that answers no body: PUT /tenants/{id}/owners/{id} is a 200
+	// and nothing, every time. Unmarshalling that is "Error parsing response"
+	// AFTER the server has already accepted the change -- so the write looks
+	// like a failure and the new value never reaches state.
+	if len(respBody) == 0 {
+{{#hasRead}}
+{{#readHasPathParams}}
+		respBody, err = r.client.DoRequest(ctx, "{{readMethod}}", fmt.Sprintf("{{readPath}}"{{^readArgs}}, state.{{idFieldExported}}{{idFieldValueAccessor}}{{/readArgs}}{{#readArgs}}, {{expr}}{{/readArgs}}), nil)
+{{/readHasPathParams}}
+{{^readHasPathParams}}
+		respBody, err = r.client.DoRequest(ctx, "{{readMethod}}", "{{readPath}}", nil)
+{{/readHasPathParams}}
+		if err != nil {
+			resp.Diagnostics.AddError("Error reading back the updated {{resourceName}}", err.Error())
+			return
+		}
+{{/hasRead}}
 	}
 
-	plan.FromClientModel(&result)
+	if len(respBody) > 0 {
+		var result client.{{responseModel}}
+		if err := json.Unmarshal(respBody, &result); err != nil {
+			resp.Diagnostics.AddError("Error parsing response", err.Error())
+			return
+		}
+
+		plan.FromClientModel(&result)
+	}
 {{/responseModel}}
 
 	tflog.Trace(ctx, "updated {{resourceName}} resource")
