@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+"""Merge several OpenAPI documents into one, for one provider binary.
+
+The WSO2 Identity Server publishes an API per component -- tenants,
+organizations, applications -- and openapi-generator reads one document per
+run. A Terraform provider is one binary with one provider block, so the
+documents are merged before the generator ever sees them.
+
+Paths are disjoint across these documents and a collision is an error. Schema
+names are NOT: `Error`, `Link` and `Attribute` are each defined three times,
+differently. A name that means two things is renamed per source -- TenantError,
+OrganizationError -- and that document's own $refs are rewritten with it, so a
+response still points at the shape its own document declared.
+
+    bin/merge-specs out.yaml tenant=a.yaml organization=b.yaml application=c.yaml
+"""
+
+import json
+import sys
+
+import yaml
+
+SECTIONS = ("schemas", "responses", "parameters", "requestBodies", "headers",
+            "securitySchemes", "examples", "links", "callbacks")
+
+
+def rewrite_refs(node, renames):
+    """Repoint every $ref this document makes at whatever its name became."""
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str) and ref in renames:
+            node["$ref"] = renames[ref]
+        for value in node.values():
+            rewrite_refs(value, renames)
+    elif isinstance(node, list):
+        for value in node:
+            rewrite_refs(value, renames)
+
+
+VERBS = ("get", "put", "post", "delete", "patch", "options", "head", "trace")
+
+
+def dedupe_operation_ids(name, doc, taken):
+    """An operationId is unique per document, not across three of them.
+
+    The organization document and the application document both spell a share
+    operation `shareOrgApplication`, and a merged document with two of those is
+    invalid. The second one seen is prefixed with its source.
+    """
+    for item in doc.get("paths", {}).values():
+        for verb in VERBS:
+            operation = item.get(verb)
+            if not isinstance(operation, dict):
+                continue
+            operation_id = operation.get("operationId")
+            if not operation_id:
+                continue
+            if operation_id in taken:
+                operation["operationId"] = name + operation_id[:1].upper() + operation_id[1:]
+            taken.add(operation["operationId"])
+
+
+def main(out, sources):
+    docs = {name: yaml.safe_load(open(path)) for name, path in sources}
+
+    taken = set()
+    for name, doc in docs.items():
+        dedupe_operation_ids(name, doc, taken)
+
+    # A name is contested when two documents define it differently. Identical
+    # definitions are the same thing said twice, and merge quietly.
+    seen = {}
+    contested = set()
+    for name, doc in docs.items():
+        for section in SECTIONS:
+            for key, value in doc.get("components", {}).get(section, {}).items():
+                fingerprint = json.dumps(value, sort_keys=True)
+                previous = seen.setdefault((section, key), fingerprint)
+                if previous != fingerprint:
+                    contested.add((section, key))
+
+    merged = None
+    for name, doc in docs.items():
+        renames = {}
+        for section, key in contested:
+            if key in doc.get("components", {}).get(section, {}):
+                renamed = name[:1].upper() + name[1:] + key
+                renames["#/components/" + section + "/" + key] = \
+                    "#/components/" + section + "/" + renamed
+
+        if renames:
+            rewrite_refs(doc, renames)
+            for old, new in renames.items():
+                section, key = old.split("/")[2], old.split("/")[3]
+                components = doc["components"][section]
+                components[new.split("/")[3]] = components.pop(key)
+
+        if merged is None:
+            merged = doc
+            continue
+
+        for path, item in doc.get("paths", {}).items():
+            if path in merged.setdefault("paths", {}):
+                sys.exit("path defined twice, and only one can win: " + path)
+            merged["paths"][path] = item
+
+        for section, entries in doc.get("components", {}).items():
+            merged.setdefault("components", {}).setdefault(section, {}).update(entries)
+
+    yaml.safe_dump(merged, open(out, "w"), sort_keys=False)
+    print("merged {} documents, {} paths, {} schemas, {} names disambiguated".format(
+        len(docs), len(merged.get("paths", {})),
+        len(merged.get("components", {}).get("schemas", {})), len(contested)))
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        sys.exit(__doc__)
+    main(sys.argv[1], [arg.split("=", 1) for arg in sys.argv[2:]])
