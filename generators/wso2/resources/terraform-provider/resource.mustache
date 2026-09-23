@@ -149,7 +149,12 @@ func (r *{{resourceClassName}}Resource) Create(ctx context.Context, req resource
 {{/hasIdAttribute}}
 {{#hasRead}}
 
+{{#readHasPathParams}}
 		respBody, err = r.client.DoRequest(ctx, "{{readMethod}}", fmt.Sprintf("{{readPath}}"{{^readArgsPlan}}, plan.{{idFieldExported}}{{idFieldValueAccessor}}{{/readArgsPlan}}{{#readArgsPlan}}, {{expr}}{{/readArgsPlan}}), nil)
+{{/readHasPathParams}}
+{{^readHasPathParams}}
+		respBody, err = r.client.DoRequest(ctx, "{{readMethod}}", "{{readPath}}", nil)
+{{/readHasPathParams}}
 		if err != nil {
 			resp.Diagnostics.AddError("Error reading back the created {{resourceName}}", err.Error())
 			return

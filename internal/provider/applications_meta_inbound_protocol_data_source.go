@@ -16,40 +16,36 @@ import (
 	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
 
-var _ datasource.DataSource = &ApplicationInboundProtocolDataSource{}
+var _ datasource.DataSource = &ApplicationsMetaInboundProtocolDataSource{}
 
-func NewApplicationInboundProtocolDataSource() datasource.DataSource {
-	return &ApplicationInboundProtocolDataSource{}
+func NewApplicationsMetaInboundProtocolDataSource() datasource.DataSource {
+	return &ApplicationsMetaInboundProtocolDataSource{}
 }
 
-type ApplicationInboundProtocolDataSource struct {
+type ApplicationsMetaInboundProtocolDataSource struct {
 	client *client.Client
 }
 
-func (d *ApplicationInboundProtocolDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_application_inbound_protocol"
+func (d *ApplicationsMetaInboundProtocolDataSource) Metadata(_ context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_applications_meta_inbound_protocol"
 }
 
-func (d *ApplicationInboundProtocolDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *ApplicationsMetaInboundProtocolDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Fetches a application_inbound_protocol data source.",
+		Description: "Fetches a applications_meta_inbound_protocol data source.",
 		Attributes: map[string]schema.Attribute{
-			"name": schema.StringAttribute{
-				Required:    true,
+			"display_name": schema.StringAttribute{
+				Computed:    true,
 				Description: "",
 			},
 			"config_name": schema.StringAttribute{
-				Required:    true,
+				Computed:    true,
 				Description: "",
 			},
 			"properties": schema.StringAttribute{
 				CustomType:  jsontypes.NormalizedType{},
 				Computed:    true,
 				Description: "",
-			},
-			"application_id": schema.StringAttribute{
-				Required:    true,
-				Description: "Identifier of the parent applicationId.",
 			},
 			"inbound_protocol_id": schema.StringAttribute{
 				Required:    true,
@@ -59,7 +55,7 @@ func (d *ApplicationInboundProtocolDataSource) Schema(_ context.Context, _ datas
 	}
 }
 
-func (d *ApplicationInboundProtocolDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *ApplicationsMetaInboundProtocolDataSource) Configure(_ context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -76,21 +72,21 @@ func (d *ApplicationInboundProtocolDataSource) Configure(_ context.Context, req 
 	d.client = c
 }
 
-func (d *ApplicationInboundProtocolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var config ApplicationInboundProtocolModel
+func (d *ApplicationsMetaInboundProtocolDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var config ApplicationsMetaInboundProtocolModel
 
 	resp.Diagnostics.Append(req.Config.Get(ctx, &config)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	respBody, err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/applications/%v/inbound-protocols/%v", config.ApplicationId.ValueString(), config.InboundProtocolId.ValueString()), nil)
+	respBody, err := d.client.DoRequest(ctx, "GET", fmt.Sprintf("/applications/meta/inbound-protocols/%v", config.InboundProtocolId.ValueString()), nil)
 	if err != nil {
-		resp.Diagnostics.AddError("Error reading application_inbound_protocol", err.Error())
+		resp.Diagnostics.AddError("Error reading applications_meta_inbound_protocol", err.Error())
 		return
 	}
 
-	var result client.CustomInboundProtocolConfiguration
+	var result client.CustomInboundProtocolMetaData
 	if err := json.Unmarshal(respBody, &result); err != nil {
 		resp.Diagnostics.AddError("Error parsing response", err.Error())
 		return
@@ -98,6 +94,6 @@ func (d *ApplicationInboundProtocolDataSource) Read(ctx context.Context, req dat
 
 	config.FromClientModel(&result)
 
-	tflog.Trace(ctx, "read application_inbound_protocol data source")
+	tflog.Trace(ctx, "read applications_meta_inbound_protocol data source")
 	resp.Diagnostics.Append(resp.State.Set(ctx, &config)...)
 }

@@ -328,6 +328,16 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             attributes.add(writeOnlyAttribute(entry.getValue()));
         }
 
+        for (Map<String, Object> attribute : attributes) {
+            String terraformName = String.valueOf(attribute.get("terraformName"));
+
+            if (RESERVED.contains(terraformName)) {
+                // The Go field and the JSON key are untouched; only the name
+                // configuration spells it moves out of Terraform's way.
+                attribute.put("terraformName", "api_" + terraformName);
+            }
+        }
+
         boolean anyJson = attributes.stream()
                 .anyMatch(attribute -> Boolean.TRUE.equals(attribute.get("isJson")));
 
@@ -674,14 +684,28 @@ public class TerraformCodegen extends TerraformProviderCodegen {
     public String toApiName(String name) {
         StringBuilder parts = new StringBuilder();
 
-        for (String segment : trim(name).split("/")) {
+        String[] segments = trim(name).split("/");
+
+        for (int i = 0; i < segments.length; i++) {
+            String segment = segments[i];
+
             if (segment.isEmpty() || segment.startsWith("{")) {
                 continue;
             }
+
+            // Singular means "one of these". A literal followed by a parameter
+            // names one -- /applications/{applicationId}/share is a share of ONE
+            // application -- while /applications/share acts on the collection.
+            // Both end in "share", and without this they were one name, one
+            // file, and one of the two resources silently gone.
+            boolean names1 = i == segments.length - 1
+                    || (i + 1 < segments.length && segments[i + 1].startsWith("{"));
+            String spelled = names1 ? singular(segment) : segment;
+
             if (parts.length() > 0) {
                 parts.append('_');
             }
-            parts.append(underscore(singular(segment).replace('-', '_')).toLowerCase(Locale.ROOT));
+            parts.append(underscore(spelled.replace('-', '_')).toLowerCase(Locale.ROOT));
         }
 
         return camelize(parts.toString());
@@ -706,7 +730,13 @@ public class TerraformCodegen extends TerraformProviderCodegen {
     }
 
     /** A trailing {@code /{param}} is the member of a collection, not a collection. */
-    private String collectionOf(String path) {
+    private String collectionOf(String raw) {
+        // /applications/{applicationId}/inbound-protocols/ and
+        // /applications/{applicationId}/inbound-protocols are the same
+        // collection, and the document spells both.
+        String path = raw.length() > 1 && raw.endsWith("/")
+                ? raw.substring(0, raw.length() - 1)
+                : raw;
         int cut = path.lastIndexOf('/');
 
         if (cut > 0 && path.endsWith("}") && path.startsWith("{", cut + 1)) {
@@ -734,6 +764,14 @@ public class TerraformCodegen extends TerraformProviderCodegen {
      * ponytail: not an inflector. A document saying "addresses" or "people"
      * wants a real one.
      */
+    /**
+     * Terraform reserves these at the root of a resource block, and a schema
+     * using one is refused outright: "count is a reserved root attribute/block
+     * name". WSO2's list responses carry a `count`.
+     */
+    private static final List<String> RESERVED =
+            Arrays.asList("count", "for_each", "depends_on", "provider", "lifecycle", "id_");
+
     private static final List<String> KEEP = Arrays.asList("ss", "us", "os", "sts");
 
     private String singular(String name) {

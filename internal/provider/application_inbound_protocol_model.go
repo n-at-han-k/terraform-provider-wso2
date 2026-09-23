@@ -2,12 +2,51 @@
 package provider
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+
+	"github.com/n-at-han-k/terraform-provider-wso2/internal/client"
 )
 
 // ApplicationInboundProtocolModel is the Terraform model for application_inbound_protocol.
 type ApplicationInboundProtocolModel struct {
+	Name types.String `tfsdk:"name"`
+	ConfigName types.String `tfsdk:"config_name"`
+	Properties jsontypes.Normalized `tfsdk:"properties"`
 	ApplicationId types.String `tfsdk:"application_id"`
+	InboundProtocolId types.String `tfsdk:"inbound_protocol_id"`
 }
 
+// ToClientModel converts a Terraform model to a client model.
+func (m *ApplicationInboundProtocolModel) ToClientModel() (*client.CustomInboundProtocolConfiguration, error) {
+	out := &client.CustomInboundProtocolConfiguration{}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		out.Name = m.Name.ValueString()
+	}
+	if !m.ConfigName.IsNull() && !m.ConfigName.IsUnknown() {
+		out.ConfigName = m.ConfigName.ValueString()
+	}
+	// A silently dropped field is worse than a loud one: bad JSON here means
+	// the configuration said something this resource cannot send, and the
+	// request would otherwise go out quietly missing it.
+	if !m.Properties.IsNull() && !m.Properties.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Properties.ValueString()), &out.Properties); err != nil {
+			return out, fmt.Errorf("properties: %w", err)
+		}
+	}
+	return out, nil
+}
 
+// FromClientModel updates the Terraform model from a client model.
+func (m *ApplicationInboundProtocolModel) FromClientModel(c *client.CustomInboundProtocolConfiguration) {
+	m.Name = types.StringValue(c.Name)
+	m.ConfigName = types.StringValue(c.ConfigName)
+	// Marshalling a Go value cannot fail in a way worth surfacing here; an
+	// unrepresentable one would have failed on the way in.
+	if encoded, err := json.Marshal(c.Properties); err == nil {
+		m.Properties = jsontypes.NewNormalizedValue(string(encoded))
+	}
+}
