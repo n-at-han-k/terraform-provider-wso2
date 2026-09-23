@@ -40,23 +40,23 @@ jobs:
       # The repository name, lowercased: ghcr.io rejects capitals in a path,
       # while github.repository preserves whatever case the account uses.
       - name: Resolve image name
-        run: echo "IMAGE=${REGISTRY}/$(echo '${{ " github.repository " }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+        run: echo "IMAGE=${REGISTRY}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
       # docker login rather than a third-party action: one less unpinned
       # dependency to keep current, and the token is already in scope.
       - name: Log in to ghcr.io
-        run: echo '${{ " secrets.GITHUB_TOKEN " }}' | docker login "$REGISTRY" -u '${{ " github.actor " }}' --password-stdin
+        run: echo '${{ secrets.GITHUB_TOKEN }}' | docker login "$REGISTRY" -u '${{ github.actor }}' --password-stdin
 
       - name: Build image
-        run: docker build -t "$IMAGE:${{ " github.sha " }}" -t "$IMAGE:latest" .
+        run: docker build -t "$IMAGE:${{ github.sha }}" -t "$IMAGE:latest" .
 
       - name: Push image
         run: |
-          docker push "$IMAGE:${{ " github.sha " }}"
+          docker push "$IMAGE:${{ github.sha }}"
           docker push "$IMAGE:latest"
 
       - name: Summary
         run: |
-          echo "Pushed \`$IMAGE:latest\` and \`$IMAGE:${{ " github.sha " }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Pushed \`$IMAGE:latest\` and \`$IMAGE:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "The package must be **public** for the cluster to pull it without an imagePullSecret." >> "$GITHUB_STEP_SUMMARY"

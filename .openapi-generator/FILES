@@ -2,7 +2,6 @@
 .github/workflows/build-image.yml
 Dockerfile
 GNUmakefile
-README.md
 examples/provider/provider.tf
 go.mod
 internal/client/client.go
