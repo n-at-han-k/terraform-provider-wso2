@@ -13,6 +13,7 @@ type ApplicationsMetaAdaptiveAuthTemplateModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsMetaAdaptiveAuthTemplateModel) FromClientModel(c *client.AdaptiveAuthTemplates) {
 	m.TemplatesJSON = types.StringValue(c.TemplatesJSON)

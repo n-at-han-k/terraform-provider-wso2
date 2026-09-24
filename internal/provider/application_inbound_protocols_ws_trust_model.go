@@ -26,6 +26,7 @@ func (m *ApplicationInboundProtocolsWsTrustModel) ToClientModel() (*client.WsTru
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolsWsTrustModel) FromClientModel(c *client.WsTrustConfiguration) {
 	m.Audience = types.StringValue(c.Audience)

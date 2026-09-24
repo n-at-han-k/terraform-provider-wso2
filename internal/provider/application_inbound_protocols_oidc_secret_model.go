@@ -27,6 +27,7 @@ func (m *ApplicationInboundProtocolsOidcSecretModel) ToClientModel() (*client.Cl
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolsOidcSecretModel) FromClientModel(c *client.ClientSecretResponse) {
 	m.SecretId = types.StringValue(c.SecretId)

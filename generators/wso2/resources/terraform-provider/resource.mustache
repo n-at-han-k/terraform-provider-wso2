@@ -260,6 +260,15 @@ func (r *{{resourceClassName}}Resource) Update(ctx context.Context, req resource
 	}
 {{/updateHasPathParams}}
 
+{{#hasSeparateUpdateModel}}
+	// The UPDATE model, not the create one -- see ToUpdateModel.
+	reqBody, err := plan.ToUpdateModel()
+	if err != nil {
+		resp.Diagnostics.AddError("Invalid {{resourceName}} configuration", err.Error())
+		return
+	}
+{{/hasSeparateUpdateModel}}
+{{^hasSeparateUpdateModel}}
 {{#requestModel}}
 	reqBody, err := plan.ToClientModel()
 	if err != nil {
@@ -271,6 +280,7 @@ func (r *{{resourceClassName}}Resource) Update(ctx context.Context, req resource
 	// This operation takes no request body.
 	var reqBody interface{}
 {{/requestModel}}
+{{/hasSeparateUpdateModel}}
 
 {{#updateHasPathParams}}
 	respBody, err := r.client.DoRequest(ctx, "{{updateMethod}}", fmt.Sprintf("{{updatePath}}"{{^updateArgs}}, plan.{{idFieldExported}}{{idFieldValueAccessor}}{{/updateArgs}}{{#updateArgs}}, {{expr}}{{/updateArgs}}), reqBody)

@@ -18,6 +18,7 @@ type OrganizationApplicationSharedAppModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationApplicationSharedAppModel) FromClientModel(c *client.SharedApplicationsResponse) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

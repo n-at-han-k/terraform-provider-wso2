@@ -141,6 +141,76 @@ func (m *ApplicationModel) ToClientModel() (*client.ApplicationModel, error) {
 	return out, nil
 }
 
+// ToUpdateModel converts a Terraform model to the UPDATE client model, which is
+// a different shape from the create one: WSO2's ApplicationPatchModel has no
+// inboundProtocolConfiguration and no id, and sending the create model to the
+// patch endpoint is answered with "provided request body content is not in the
+// expected format".
+//
+// Fields the patch model does not declare are simply absent here -- the
+// generator only emits the ones it has.
+func (m *ApplicationModel) ToUpdateModel() (*client.ApplicationPatchModel, error) {
+	out := &client.ApplicationPatchModel{}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		out.Name = m.Name.ValueString()
+	}
+	if !m.Description.IsNull() && !m.Description.IsUnknown() {
+		out.Description = m.Description.ValueString()
+	}
+	if !m.ApplicationVersion.IsNull() && !m.ApplicationVersion.IsUnknown() {
+		out.ApplicationVersion = m.ApplicationVersion.ValueString()
+	}
+	if !m.ImageUrl.IsNull() && !m.ImageUrl.IsUnknown() {
+		out.ImageUrl = m.ImageUrl.ValueString()
+	}
+	if !m.AccessUrl.IsNull() && !m.AccessUrl.IsUnknown() {
+		out.AccessUrl = m.AccessUrl.ValueString()
+	}
+	if !m.LogoutReturnUrl.IsNull() && !m.LogoutReturnUrl.IsUnknown() {
+		out.LogoutReturnUrl = m.LogoutReturnUrl.ValueString()
+	}
+	if !m.TemplateId.IsNull() && !m.TemplateId.IsUnknown() {
+		out.TemplateId = m.TemplateId.ValueString()
+	}
+	if !m.TemplateVersion.IsNull() && !m.TemplateVersion.IsUnknown() {
+		out.TemplateVersion = m.TemplateVersion.ValueString()
+	}
+	if !m.EnhancedOrgAuthenticationEnabled.IsNull() && !m.EnhancedOrgAuthenticationEnabled.IsUnknown() {
+		EnhancedOrgAuthenticationEnabled := m.EnhancedOrgAuthenticationEnabled.ValueBool()
+		out.EnhancedOrgAuthenticationEnabled = &EnhancedOrgAuthenticationEnabled
+	}
+	if !m.ApplicationEnabled.IsNull() && !m.ApplicationEnabled.IsUnknown() {
+		ApplicationEnabled := m.ApplicationEnabled.ValueBool()
+		out.ApplicationEnabled = &ApplicationEnabled
+	}
+	if !m.AssociatedRoles.IsNull() && !m.AssociatedRoles.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.AssociatedRoles.ValueString()), &out.AssociatedRoles); err != nil {
+			return out, fmt.Errorf("associated_roles: %w", err)
+		}
+	}
+	if !m.ClaimConfiguration.IsNull() && !m.ClaimConfiguration.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.ClaimConfiguration.ValueString()), &out.ClaimConfiguration); err != nil {
+			return out, fmt.Errorf("claim_configuration: %w", err)
+		}
+	}
+	if !m.AuthenticationSequence.IsNull() && !m.AuthenticationSequence.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.AuthenticationSequence.ValueString()), &out.AuthenticationSequence); err != nil {
+			return out, fmt.Errorf("authentication_sequence: %w", err)
+		}
+	}
+	if !m.AdvancedConfigurations.IsNull() && !m.AdvancedConfigurations.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.AdvancedConfigurations.ValueString()), &out.AdvancedConfigurations); err != nil {
+			return out, fmt.Errorf("advanced_configurations: %w", err)
+		}
+	}
+	if !m.ProvisioningConfigurations.IsNull() && !m.ProvisioningConfigurations.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.ProvisioningConfigurations.ValueString()), &out.ProvisioningConfigurations); err != nil {
+			return out, fmt.Errorf("provisioning_configurations: %w", err)
+		}
+	}
+	return out, nil
+}
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationModel) FromClientModel(c *client.ApplicationResponseModel) {
 	m.Id = types.StringValue(c.Id)

@@ -15,6 +15,7 @@ type ApplicationsMetaInboundProtocolsWsTrustModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsMetaInboundProtocolsWsTrustModel) FromClientModel(c *client.WsTrustMetaData) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

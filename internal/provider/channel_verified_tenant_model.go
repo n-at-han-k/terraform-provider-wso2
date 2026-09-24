@@ -51,3 +51,4 @@ func (m *ChannelVerifiedTenantModel) ToClientModel() (*client.ChannelVerifiedTen
 	return out, nil
 }
 
+

@@ -19,6 +19,7 @@ type ApplicationsMetaInboundProtocolModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsMetaInboundProtocolModel) FromClientModel(c *client.CustomInboundProtocolMetaData) {
 	m.DisplayName = types.StringValue(c.DisplayName)

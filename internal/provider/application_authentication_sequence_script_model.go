@@ -22,3 +22,4 @@ func (m *ApplicationAuthenticationSequenceScriptModel) ToClientModel() (*client.
 	return out, nil
 }
 
+

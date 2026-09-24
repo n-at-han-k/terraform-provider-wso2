@@ -40,3 +40,4 @@ func (m *OrganizationApplicationShareModel) ToClientModel() (*client.Organizatio
 	return out, nil
 }
 
+

@@ -16,6 +16,7 @@ type OrganizationsMetaAttributeModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsMetaAttributeModel) FromClientModel(c *client.MetaAttributesResponse) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

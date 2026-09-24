@@ -279,7 +279,8 @@ func (r *ApplicationResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	reqBody, err := plan.ToClientModel()
+	// The UPDATE model, not the create one -- see ToUpdateModel.
+	reqBody, err := plan.ToUpdateModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid application configuration", err.Error())
 		return

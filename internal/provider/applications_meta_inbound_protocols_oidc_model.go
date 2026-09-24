@@ -36,6 +36,7 @@ type ApplicationsMetaInboundProtocolsOidcModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsMetaInboundProtocolsOidcModel) FromClientModel(c *client.OidcMetaData) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

@@ -15,6 +15,7 @@ type ApplicationsLoginflowResultModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsLoginflowResultModel) FromClientModel(c *client.LoginFlowResultResponse) {
 }

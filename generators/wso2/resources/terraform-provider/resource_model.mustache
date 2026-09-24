@@ -82,6 +82,53 @@ func (m *{{resourceClassName}}Model) ToClientModel() (*client.{{requestModel}}, 
 }
 {{/requestModel}}
 
+{{#hasSeparateUpdateModel}}
+// ToUpdateModel converts a Terraform model to the UPDATE client model, which is
+// a different shape from the create one: WSO2's ApplicationPatchModel has no
+// inboundProtocolConfiguration and no id, and sending the create model to the
+// patch endpoint is answered with "provided request body content is not in the
+// expected format".
+//
+// Fields the patch model does not declare are simply absent here -- the
+// generator only emits the ones it has.
+func (m *{{resourceClassName}}Model) ToUpdateModel() (*client.{{updateRequestModel}}, error) {
+	out := &client.{{updateRequestModel}}{}
+{{#tfAttributes}}
+{{#inUpdateRequest}}
+{{#isString}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = m.{{goName}}.ValueString()
+	}
+{{/isString}}
+{{#isInt64}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = {{goType}}(m.{{goName}}.ValueInt64())
+	}
+{{/isInt64}}
+{{#isFloat64}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		out.{{goName}} = {{goType}}(m.{{goName}}.ValueFloat64())
+	}
+{{/isFloat64}}
+{{#isBool}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		{{goName}} := m.{{goName}}.ValueBool()
+		out.{{goName}} = &{{goName}}
+	}
+{{/isBool}}
+{{#isJson}}
+	if !m.{{goName}}.IsNull() && !m.{{goName}}.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.{{goName}}.ValueString()), &out.{{goName}}); err != nil {
+			return out, fmt.Errorf("{{terraformName}}: %w", err)
+		}
+	}
+{{/isJson}}
+{{/inUpdateRequest}}
+{{/tfAttributes}}
+	return out, nil
+}
+{{/hasSeparateUpdateModel}}
+
 {{#responseModel}}
 // FromClientModel updates the Terraform model from a client model.
 func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}) {

@@ -48,3 +48,16 @@ func (m *ApplicationAuthorizedApiModel) ToClientModel() (*client.AuthorizedApiCr
 	return out, nil
 }
 
+// ToUpdateModel converts a Terraform model to the UPDATE client model, which is
+// a different shape from the create one: WSO2's ApplicationPatchModel has no
+// inboundProtocolConfiguration and no id, and sending the create model to the
+// patch endpoint is answered with "provided request body content is not in the
+// expected format".
+//
+// Fields the patch model does not declare are simply absent here -- the
+// generator only emits the ones it has.
+func (m *ApplicationAuthorizedApiModel) ToUpdateModel() (*client.AuthorizedApiPatchModel, error) {
+	out := &client.AuthorizedApiPatchModel{}
+	return out, nil
+}
+

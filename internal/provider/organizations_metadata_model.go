@@ -28,6 +28,7 @@ type OrganizationsMetadataModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsMetadataModel) FromClientModel(c *client.OrganizationMetadata) {
 	m.Id = types.StringValue(c.Id)

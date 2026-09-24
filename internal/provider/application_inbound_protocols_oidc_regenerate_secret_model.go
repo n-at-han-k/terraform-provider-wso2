@@ -43,6 +43,7 @@ type ApplicationInboundProtocolsOidcRegenerateSecretModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolsOidcRegenerateSecretModel) FromClientModel(c *client.OpenIdConnectConfiguration) {
 	m.ClientId = types.StringValue(c.ClientId)

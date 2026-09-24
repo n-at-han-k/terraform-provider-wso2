@@ -39,3 +39,4 @@ func (m *ApplicationShareModel) ToClientModel() (*client.ApplicationApplicationS
 	return out, nil
 }
 
+

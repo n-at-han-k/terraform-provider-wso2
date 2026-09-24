@@ -22,6 +22,7 @@ func (m *OrganizationsCheckNameModel) ToClientModel() (*client.OrganizationNameC
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsCheckNameModel) FromClientModel(c *client.OrganizationNameCheckPostResponse) {
 	// A bool the server does not answer leaves the pointer nil, and a Computed

@@ -39,6 +39,7 @@ func (m *OrganizationsDiscoveryModel) ToClientModel() (*client.OrganizationDisco
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationsDiscoveryModel) FromClientModel(c *client.OrganizationsDiscoveryResponse) {
 	m.TotalResults = types.Int64Value(int64(c.TotalResults))

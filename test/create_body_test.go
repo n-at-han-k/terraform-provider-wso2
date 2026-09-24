@@ -86,3 +86,32 @@ func TestExplicitFalseSurvivesTheWire(t *testing.T) {
 		t.Errorf("an explicit false must be sent; body was %s", body)
 	}
 }
+
+// The UPDATE body is a different shape from the create one. WSO2's
+// ApplicationPatchModel declares neither inboundProtocolConfiguration nor id,
+// and sending the create model to PATCH /applications/{id} is answered with
+// UE-10000, "provided request body content is not in the expected format" --
+// which is what stopped the workspace syncing.
+func TestPatchModelHasNoInboundProtocolOrId(t *testing.T) {
+	patch := &client.ApplicationPatchModel{}
+	patch.Name = "plaat.fm"
+
+	body, err := json.Marshal(patch)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+
+	var got map[string]any
+	if err := json.Unmarshal(body, &got); err != nil {
+		t.Fatalf("remarshal: %v", err)
+	}
+
+	for _, key := range []string{"inboundProtocolConfiguration", "id"} {
+		if _, present := got[key]; present {
+			t.Errorf("%s must not be in a patch body; got %s", key, body)
+		}
+	}
+	if got["name"] != "plaat.fm" {
+		t.Errorf("name must survive; got %s", body)
+	}
+}

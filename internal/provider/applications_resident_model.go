@@ -39,6 +39,7 @@ func (m *ApplicationsResidentModel) ToClientModel() (*client.ProvisioningConfigu
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsResidentModel) FromClientModel(c *client.ResidentApplication) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

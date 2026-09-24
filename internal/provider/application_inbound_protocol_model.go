@@ -40,6 +40,7 @@ func (m *ApplicationInboundProtocolModel) ToClientModel() (*client.CustomInbound
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolModel) FromClientModel(c *client.CustomInboundProtocolConfiguration) {
 	m.Name = types.StringValue(c.Name)

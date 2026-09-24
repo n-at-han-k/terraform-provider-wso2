@@ -36,6 +36,7 @@ func (m *ApplicationsUnshareModel) ToClientModel() (*client.ApplicationUnshareSe
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsUnshareModel) FromClientModel(c *client.ProcessSuccessResponse) {
 	m.Status = types.StringValue(c.Status)

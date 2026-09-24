@@ -22,6 +22,7 @@ type TenantsDomainModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *TenantsDomainModel) FromClientModel(c *client.TenantResponseModel) {
 	m.Id = types.StringValue(c.Id)

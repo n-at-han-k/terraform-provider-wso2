@@ -21,6 +21,7 @@ type ApplicationsMetaInboundProtocolsSamlModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsMetaInboundProtocolsSamlModel) FromClientModel(c *client.SamlMetaData) {
 	m.DefaultNameIdFormat = types.StringValue(c.DefaultNameIdFormat)

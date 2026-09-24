@@ -229,6 +229,7 @@ func (m *ApplicationInboundProtocolsOidcModel) ToClientModel() (*client.OpenIdCo
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolsOidcModel) FromClientModel(c *client.OpenIdConnectConfiguration) {
 	m.ClientId = types.StringValue(c.ClientId)

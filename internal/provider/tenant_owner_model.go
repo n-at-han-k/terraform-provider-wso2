@@ -49,6 +49,7 @@ func (m *TenantOwnerModel) ToClientModel() (*client.OwnerPutModel, error) {
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *TenantOwnerModel) FromClientModel(c *client.OwnerInfoResponse) {
 	m.Id = types.StringValue(c.Id)

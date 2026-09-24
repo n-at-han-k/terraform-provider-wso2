@@ -30,6 +30,7 @@ func (m *ApplicationInboundProtocolsPassiveStsModel) ToClientModel() (*client.Pa
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolsPassiveStsModel) FromClientModel(c *client.PassiveStsConfiguration) {
 	m.Realm = types.StringValue(c.Realm)

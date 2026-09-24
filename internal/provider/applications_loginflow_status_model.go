@@ -14,6 +14,7 @@ type ApplicationsLoginflowStatusModel struct {
 }
 
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsLoginflowStatusModel) FromClientModel(c *client.LoginFlowStatusResponse) {
 	m.OperationId = types.StringValue(c.OperationId)

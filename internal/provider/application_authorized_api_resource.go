@@ -139,7 +139,8 @@ func (r *ApplicationAuthorizedApiResource) Update(ctx context.Context, req resou
 		return
 	}
 
-	reqBody, err := plan.ToClientModel()
+	// The UPDATE model, not the create one -- see ToUpdateModel.
+	reqBody, err := plan.ToUpdateModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid application_authorized_api configuration", err.Error())
 		return

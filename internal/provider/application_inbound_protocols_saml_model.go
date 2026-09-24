@@ -50,6 +50,7 @@ func (m *ApplicationInboundProtocolsSamlModel) ToClientModel() (*client.Saml2Con
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationInboundProtocolsSamlModel) FromClientModel(c *client.Saml2ServiceProvider) {
 	m.Issuer = types.StringValue(c.Issuer)

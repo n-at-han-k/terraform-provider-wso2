@@ -31,6 +31,7 @@ func (m *OrganizationDiscoveryModel) ToClientModel() (*client.OrganizationDiscov
 	return out, nil
 }
 
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationDiscoveryModel) FromClientModel(c *client.OrganizationDiscoveryAttributes) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an

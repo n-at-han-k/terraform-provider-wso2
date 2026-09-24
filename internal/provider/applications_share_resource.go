@@ -133,7 +133,8 @@ func (r *ApplicationsShareResource) Update(ctx context.Context, req resource.Upd
 	}
 
 
-	reqBody, err := plan.ToClientModel()
+	// The UPDATE model, not the create one -- see ToUpdateModel.
+	reqBody, err := plan.ToUpdateModel()
 	if err != nil {
 		resp.Diagnostics.AddError("Invalid applications_share configuration", err.Error())
 		return

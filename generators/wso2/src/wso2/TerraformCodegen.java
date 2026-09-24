@@ -168,6 +168,17 @@ public class TerraformCodegen extends TerraformProviderCodegen {
 
         OperationsMap processed = super.postProcessOperationsWithModels(objs, allModels);
 
+        // THE UPDATE HAS ITS OWN BODY. Upstream has one requestModel, the create's,
+        // and sends it to the update too -- so PATCH /applications/{id} received
+        // an ApplicationModel where it wanted an ApplicationPatchModel, and WSO2
+        // answered UE-10000, "provided request body content is not in the
+        // expected format". They really are different: the patch model has no
+        // inboundProtocolConfiguration and no id.
+        CodegenOperation updateOp = operationFlagged(group, "x-terraform-is-update");
+        if (updateOp != null && updateOp.bodyParam != null) {
+            processed.getOperations().put("updateRequestModel", updateOp.bodyParam.dataType);
+        }
+
         // Upstream takes the request body from the CREATE operation only, so a
         // resource you can update but not create -- a tenant's owner is PUT,
         // never POSTed -- had no request model, and ToClientModel came out as
@@ -186,7 +197,7 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         // the templates spelled `client.interface{}` and `client.[]Organization...`.
         // Where the name is not a generated model, there is no model. AFTER the
         // fallback above, or the fallback puts one straight back.
-        for (String key : new String[] { "responseModel", "requestModel" }) {
+        for (String key : new String[] { "responseModel", "requestModel", "updateRequestModel" }) {
             Object name = processed.getOperations().get(key);
 
             if (name != null && modelNamed(allModels, String.valueOf(name)) == null) {
@@ -240,6 +251,12 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         processed.getOperations().put("usesEncodingJson", toJson || fromJson);
         processed.getOperations().put("usesFmt", toJson);
         processed.getOperations().put("hasClientModel", request || response);
+
+        Object createModel = processed.getOperations().get("requestModel");
+        Object updateModel = processed.getOperations().get("updateRequestModel");
+        // Only worth a second conversion when the shapes actually differ.
+        processed.getOperations().put("hasSeparateUpdateModel",
+                updateModel != null && !updateModel.equals(createModel));
 
         processed.getOperations().put("idIsString",
                 ".ValueString()".equals(processed.getOperations().get("idFieldValueAccessor")));
@@ -296,6 +313,19 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             }
         }
 
+        // The UPDATE body is its own shape. ApplicationPatchModel declares
+        // neither inboundProtocolConfiguration nor id, so an attribute absent
+        // here must not be put in a patch -- the whole body is refused if it is.
+        CodegenModel updateRequest =
+                modelNamed(allModels, (String) operations.get("updateRequestModel"));
+        Set<String> patchable = new HashSet<>();
+
+        if (updateRequest != null) {
+            for (CodegenProperty property : updateRequest.vars) {
+                patchable.add(property.baseName.toLowerCase(Locale.ROOT));
+            }
+        }
+
         Set<String> answered = new HashSet<>();
 
         for (Map<String, Object> attribute : attributes) {
@@ -324,6 +354,7 @@ public class TerraformCodegen extends TerraformProviderCodegen {
             boolean sameShape = writes == null
                     || writes.dataType.equals(String.valueOf(attribute.get("goType")));
             attribute.put("inRequest", writes != null);
+            attribute.put("inUpdateRequest", patchable.contains(name));
             attribute.put("readBack", sameShape);
 
             unpoint(attribute);
@@ -639,6 +670,7 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         attribute.put("isOptional", !property.required);
         attribute.put("isComputed", false);
         attribute.put("inRequest", true);
+        attribute.put("inUpdateRequest", false);
         // Nothing answers it, so there is nothing to read back.
         attribute.put("readBack", false);
         attribute.put("isString", "string".equals(property.dataType));

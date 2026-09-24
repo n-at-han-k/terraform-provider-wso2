@@ -36,6 +36,19 @@ func (m *ApplicationsShareModel) ToClientModel() (*client.ApplicationShareSelect
 	return out, nil
 }
 
+// ToUpdateModel converts a Terraform model to the UPDATE client model, which is
+// a different shape from the create one: WSO2's ApplicationPatchModel has no
+// inboundProtocolConfiguration and no id, and sending the create model to the
+// patch endpoint is answered with "provided request body content is not in the
+// expected format".
+//
+// Fields the patch model does not declare are simply absent here -- the
+// generator only emits the ones it has.
+func (m *ApplicationsShareModel) ToUpdateModel() (*client.ApplicationSharingPatchRequest, error) {
+	out := &client.ApplicationSharingPatchRequest{}
+	return out, nil
+}
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *ApplicationsShareModel) FromClientModel(c *client.ProcessSuccessResponse) {
 	m.Status = types.StringValue(c.Status)

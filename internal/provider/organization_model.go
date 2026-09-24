@@ -59,6 +59,36 @@ func (m *OrganizationModel) ToClientModel() (*client.OrganizationPostRequest, er
 	return out, nil
 }
 
+// ToUpdateModel converts a Terraform model to the UPDATE client model, which is
+// a different shape from the create one: WSO2's ApplicationPatchModel has no
+// inboundProtocolConfiguration and no id, and sending the create model to the
+// patch endpoint is answered with "provided request body content is not in the
+// expected format".
+//
+// Fields the patch model does not declare are simply absent here -- the
+// generator only emits the ones it has.
+func (m *OrganizationModel) ToUpdateModel() (*client.OrganizationPutRequest, error) {
+	out := &client.OrganizationPutRequest{}
+	if !m.Name.IsNull() && !m.Name.IsUnknown() {
+		out.Name = m.Name.ValueString()
+	}
+	if !m.Description.IsNull() && !m.Description.IsUnknown() {
+		out.Description = m.Description.ValueString()
+	}
+	if !m.Status.IsNull() && !m.Status.IsUnknown() {
+		out.Status = m.Status.ValueString()
+	}
+	if !m.Version.IsNull() && !m.Version.IsUnknown() {
+		out.Version = m.Version.ValueString()
+	}
+	if !m.Attributes.IsNull() && !m.Attributes.IsUnknown() {
+		if err := json.Unmarshal([]byte(m.Attributes.ValueString()), &out.Attributes); err != nil {
+			return out, fmt.Errorf("attributes: %w", err)
+		}
+	}
+	return out, nil
+}
+
 // FromClientModel updates the Terraform model from a client model.
 func (m *OrganizationModel) FromClientModel(c *client.GetOrganizationResponse) {
 	m.Id = types.StringValue(c.Id)
