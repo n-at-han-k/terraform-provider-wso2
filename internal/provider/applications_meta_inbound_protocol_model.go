@@ -26,7 +26,15 @@ func (m *ApplicationsMetaInboundProtocolModel) FromClientModel(c *client.CustomI
 	m.ConfigName = types.StringValue(c.ConfigName)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Properties); err == nil {
-		m.Properties = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Properties.IsNull() || m.Properties.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Properties.ValueString()) {
+			m.Properties = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

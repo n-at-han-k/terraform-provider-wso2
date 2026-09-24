@@ -59,7 +59,15 @@ func (m *TenantOwnerModel) FromClientModel(c *client.OwnerInfoResponse) {
 	m.Lastname = types.StringValue(c.Lastname)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.AdditionalClaims); err == nil {
-		m.AdditionalClaims = jsontypes.NewNormalizedValue(string(encoded))
+		if m.AdditionalClaims.IsNull() || m.AdditionalClaims.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.AdditionalClaims.ValueString()) {
+			m.AdditionalClaims = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

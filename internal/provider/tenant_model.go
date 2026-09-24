@@ -51,8 +51,16 @@ func (m *TenantModel) FromClientModel(c *client.TenantResponseModel) {
 	m.CreatedDate = types.StringValue(c.CreatedDate)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.LifecycleStatus); err == nil {
-		m.LifecycleStatus = jsontypes.NewNormalizedValue(string(encoded))
+		if m.LifecycleStatus.IsNull() || m.LifecycleStatus.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.LifecycleStatus.ValueString()) {
+			m.LifecycleStatus = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	m.Region = types.StringValue(c.Region)
 }

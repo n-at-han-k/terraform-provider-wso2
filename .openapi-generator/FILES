@@ -266,6 +266,8 @@ internal/provider/applications_unshare_with_all_resource.go
 internal/provider/channel_verified_tenant_data_source.go
 internal/provider/channel_verified_tenant_model.go
 internal/provider/channel_verified_tenant_resource.go
+internal/provider/json_superset.go
+internal/provider/json_superset_test.go
 internal/provider/organization_application_fragment_app_data_source.go
 internal/provider/organization_application_fragment_app_model.go
 internal/provider/organization_application_fragment_app_resource.go

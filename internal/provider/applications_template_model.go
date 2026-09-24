@@ -81,15 +81,31 @@ func (m *ApplicationsTemplateModel) FromClientModel(c *client.ApplicationTemplat
 	m.AuthenticationProtocol = types.StringValue(c.AuthenticationProtocol)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Types); err == nil {
-		m.Types = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Types.IsNull() || m.Types.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Types.ValueString()) {
+			m.Types = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	m.Category = types.StringValue(c.Category)
 	m.TemplateGroup = types.StringValue(c.TemplateGroup)
 	m.DisplayOrder = types.Int64Value(int64(c.DisplayOrder))
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Application); err == nil {
-		m.Application = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Application.IsNull() || m.Application.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Application.ValueString()) {
+			m.Application = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

@@ -57,35 +57,83 @@ func (m *ApplicationInboundProtocolsSamlModel) FromClientModel(c *client.Saml2Se
 	m.ServiceProviderQualifier = types.StringValue(c.ServiceProviderQualifier)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.AssertionConsumerUrls); err == nil {
-		m.AssertionConsumerUrls = jsontypes.NewNormalizedValue(string(encoded))
+		if m.AssertionConsumerUrls.IsNull() || m.AssertionConsumerUrls.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.AssertionConsumerUrls.ValueString()) {
+			m.AssertionConsumerUrls = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	m.DefaultAssertionConsumerUrl = types.StringValue(c.DefaultAssertionConsumerUrl)
 	m.IdpEntityIdAlias = types.StringValue(c.IdpEntityIdAlias)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.SingleSignOnProfile); err == nil {
-		m.SingleSignOnProfile = jsontypes.NewNormalizedValue(string(encoded))
+		if m.SingleSignOnProfile.IsNull() || m.SingleSignOnProfile.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.SingleSignOnProfile.ValueString()) {
+			m.SingleSignOnProfile = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.AttributeProfile); err == nil {
-		m.AttributeProfile = jsontypes.NewNormalizedValue(string(encoded))
+		if m.AttributeProfile.IsNull() || m.AttributeProfile.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.AttributeProfile.ValueString()) {
+			m.AttributeProfile = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.SingleLogoutProfile); err == nil {
-		m.SingleLogoutProfile = jsontypes.NewNormalizedValue(string(encoded))
+		if m.SingleLogoutProfile.IsNull() || m.SingleLogoutProfile.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.SingleLogoutProfile.ValueString()) {
+			m.SingleLogoutProfile = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.RequestValidation); err == nil {
-		m.RequestValidation = jsontypes.NewNormalizedValue(string(encoded))
+		if m.RequestValidation.IsNull() || m.RequestValidation.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.RequestValidation.ValueString()) {
+			m.RequestValidation = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.ResponseSigning); err == nil {
-		m.ResponseSigning = jsontypes.NewNormalizedValue(string(encoded))
+		if m.ResponseSigning.IsNull() || m.ResponseSigning.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.ResponseSigning.ValueString()) {
+			m.ResponseSigning = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// A bool the server does not answer leaves the pointer nil, and a Computed
 	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown

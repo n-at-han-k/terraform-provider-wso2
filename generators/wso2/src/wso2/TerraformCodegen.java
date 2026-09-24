@@ -80,6 +80,13 @@ public class TerraformCodegen extends TerraformProviderCodegen {
         // These live under the same resource directory name as upstream's
         // templates and resolve off the classpath, our jar first -- so the
         // stock templates still come from the CLI's jar and no -t is needed.
+        // The one piece of hand-written Go in the provider: see the file's own
+        // comment for why a JSON attribute cannot simply take what the server
+        // answered.
+        supportingFiles.add(new SupportingFile("json_superset.mustache",
+                "internal" + File.separator + "provider", "json_superset.go"));
+        supportingFiles.add(new SupportingFile("json_superset_test.mustache",
+                "internal" + File.separator + "provider", "json_superset_test.go"));
         supportingFiles.add(new SupportingFile("Dockerfile.mustache", "", "Dockerfile"));
         supportingFiles.add(new SupportingFile("dockerignore.mustache", "", ".dockerignore"));
         supportingFiles.add(new SupportingFile("build_image_workflow.mustache",

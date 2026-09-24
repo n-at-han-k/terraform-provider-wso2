@@ -44,7 +44,15 @@ func (m *ApplicationsResidentModel) ToClientModel() (*client.ProvisioningConfigu
 func (m *ApplicationsResidentModel) FromClientModel(c *client.ResidentApplication) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.ProvisioningConfigurations); err == nil {
-		m.ProvisioningConfigurations = jsontypes.NewNormalizedValue(string(encoded))
+		if m.ProvisioningConfigurations.IsNull() || m.ProvisioningConfigurations.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.ProvisioningConfigurations.ValueString()) {
+			m.ProvisioningConfigurations = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

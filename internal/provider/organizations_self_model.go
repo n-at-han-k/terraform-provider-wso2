@@ -41,8 +41,16 @@ func (m *OrganizationsSelfModel) FromClientModel(c *client.OrganizationResponse)
 	m.Type = types.StringValue(c.Type)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Parent); err == nil {
-		m.Parent = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Parent.IsNull() || m.Parent.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Parent.ValueString()) {
+			m.Parent = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// A bool the server does not answer leaves the pointer nil, and a Computed
 	// attribute is UNKNOWN in the plan -- "provider still indicated an unknown
@@ -55,7 +63,15 @@ func (m *OrganizationsSelfModel) FromClientModel(c *client.OrganizationResponse)
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Attributes); err == nil {
-		m.Attributes = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Attributes.IsNull() || m.Attributes.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Attributes.ValueString()) {
+			m.Attributes = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

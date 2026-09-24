@@ -157,8 +157,16 @@ func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}
 {{#isJson}}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.{{goName}}); err == nil {
-		m.{{goName}} = jsontypes.NewNormalizedValue(string(encoded))
+		if m.{{goName}}.IsNull() || m.{{goName}}.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.{{goName}}.ValueString()) {
+			m.{{goName}} = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 {{/isJson}}
 {{/readBack}}

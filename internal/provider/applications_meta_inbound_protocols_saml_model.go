@@ -27,27 +27,67 @@ func (m *ApplicationsMetaInboundProtocolsSamlModel) FromClientModel(c *client.Sa
 	m.DefaultNameIdFormat = types.StringValue(c.DefaultNameIdFormat)
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.CertificateAlias); err == nil {
-		m.CertificateAlias = jsontypes.NewNormalizedValue(string(encoded))
+		if m.CertificateAlias.IsNull() || m.CertificateAlias.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.CertificateAlias.ValueString()) {
+			m.CertificateAlias = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.ResponseSigningAlgorithm); err == nil {
-		m.ResponseSigningAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		if m.ResponseSigningAlgorithm.IsNull() || m.ResponseSigningAlgorithm.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.ResponseSigningAlgorithm.ValueString()) {
+			m.ResponseSigningAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.ResponseDigestAlgorithm); err == nil {
-		m.ResponseDigestAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		if m.ResponseDigestAlgorithm.IsNull() || m.ResponseDigestAlgorithm.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.ResponseDigestAlgorithm.ValueString()) {
+			m.ResponseDigestAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.AssertionEncryptionAlgorithm); err == nil {
-		m.AssertionEncryptionAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		if m.AssertionEncryptionAlgorithm.IsNull() || m.AssertionEncryptionAlgorithm.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.AssertionEncryptionAlgorithm.ValueString()) {
+			m.AssertionEncryptionAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.KeyEncryptionAlgorithm); err == nil {
-		m.KeyEncryptionAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		if m.KeyEncryptionAlgorithm.IsNull() || m.KeyEncryptionAlgorithm.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.KeyEncryptionAlgorithm.ValueString()) {
+			m.KeyEncryptionAlgorithm = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

@@ -22,7 +22,15 @@ type ApplicationSharedAppModel struct {
 func (m *ApplicationSharedAppModel) FromClientModel(c *client.SharedApplicationsResponse) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.SharedApplications); err == nil {
-		m.SharedApplications = jsontypes.NewNormalizedValue(string(encoded))
+		if m.SharedApplications.IsNull() || m.SharedApplications.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.SharedApplications.ValueString()) {
+			m.SharedApplications = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }

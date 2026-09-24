@@ -21,12 +21,28 @@ type OrganizationsMetaAttributeModel struct {
 func (m *OrganizationsMetaAttributeModel) FromClientModel(c *client.MetaAttributesResponse) {
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Links); err == nil {
-		m.Links = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Links.IsNull() || m.Links.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Links.ValueString()) {
+			m.Links = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 	// Marshalling a Go value cannot fail in a way worth surfacing here; an
 	// unrepresentable one would have failed on the way in.
+	//
+	// The answer is only written when it says something the configuration does
+	// not already say -- see jsonSupersetOf. A server that merely filled in its
+	// own defaults has told us nothing, and recording it would fail the apply
+	// and then propose an update forever.
 	if encoded, err := json.Marshal(c.Attributes); err == nil {
-		m.Attributes = jsontypes.NewNormalizedValue(string(encoded))
+		if m.Attributes.IsNull() || m.Attributes.IsUnknown() ||
+			!jsonSupersetOf(string(encoded), m.Attributes.ValueString()) {
+			m.Attributes = jsontypes.NewNormalizedValue(string(encoded))
+		}
 	}
 }
