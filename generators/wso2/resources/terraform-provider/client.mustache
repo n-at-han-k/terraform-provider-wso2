@@ -11,6 +11,25 @@ import (
 	"strings"
 )
 
+// APIError is any answer that was not a 2xx, carrying the status alongside the
+// body.
+//
+// THE STATUS IS WHAT TELLS A DELETED RESOURCE FROM A BROKEN ONE. A read that
+// 404s means the thing is gone and state should say so; a read that 500s means
+// nothing of the kind. Without the status both look like "an error" and the
+// only safe response to either is to fail the whole run -- which is what
+// happened to a workspace holding an application somebody had deleted by hand:
+// every plan died on it, for a resource the configuration no longer even
+// mentioned.
+type APIError struct {
+	StatusCode int
+	Body       string
+}
+
+func (e *APIError) Error() string {
+	return fmt.Sprintf("API error (status %d): %s", e.StatusCode, e.Body)
+}
+
 // Client is the API client used to interact with the API.
 type Client struct {
 	BaseURL    string
@@ -99,7 +118,7 @@ func (c *Client) doRequest(ctx context.Context, method, path string, body interf
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, "", fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(respBody))
+		return nil, "", &APIError{StatusCode: resp.StatusCode, Body: string(respBody)}
 	}
 
 	return respBody, resp.Header.Get("Location"), nil

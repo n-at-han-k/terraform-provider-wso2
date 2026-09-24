@@ -3,7 +3,9 @@ package provider
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"encoding/json"
 
 
@@ -93,6 +95,21 @@ func (r *ApplicationSharedAppResource) Read(ctx context.Context, req resource.Re
 
 	respBody, err := r.client.DoRequest(ctx, "GET", fmt.Sprintf("/applications/%v/shared-apps", state.ApplicationId.ValueString()), nil)
 	if err != nil {
+		// GONE IS NOT BROKEN. A 404 here means the resource this state row
+		// describes no longer exists -- deleted by hand, or by something else
+		// that owns it -- and the honest answer is to drop the row and let the
+		// plan decide whether to recreate it. Raising instead fails every plan
+		// in the configuration, including the ones with nothing to do with this
+		// resource, and leaves no way out but editing state by hand.
+		//
+		// ONLY IN Read. The same 404 after a create or an update is a real
+		// failure: something we just wrote is missing.
+		var apiErr *client.APIError
+		if errors.As(err, &apiErr) && apiErr.StatusCode == http.StatusNotFound {
+			resp.State.RemoveResource(ctx)
+			return
+		}
+
 		resp.Diagnostics.AddError("Error reading application_shared_app", err.Error())
 		return
 	}
