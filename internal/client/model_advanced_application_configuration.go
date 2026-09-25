@@ -7,7 +7,7 @@ type AdvancedApplicationConfiguration struct {
 	Saas *bool `json:"saas,omitempty"`
 	DiscoverableByEndUsers *bool `json:"discoverableByEndUsers,omitempty"`
 	DiscoverableGroups []DiscoverableGroup `json:"discoverableGroups,omitempty"`
-	Certificate *Certificate `json:"certificate,omitempty"`
+	Certificate *ApplicationCertificate `json:"certificate,omitempty"`
 	SkipLoginConsent *bool `json:"skipLoginConsent,omitempty"`
 	SkipLogoutConsent *bool `json:"skipLogoutConsent,omitempty"`
 	UseExternalConsentPage *bool `json:"useExternalConsentPage,omitempty"`

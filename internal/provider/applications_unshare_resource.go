@@ -107,7 +107,7 @@ func (r *ApplicationsUnshareResource) Create(ctx context.Context, req resource.C
 	}
 
 	if len(respBody) > 0 {
-		var result client.ProcessSuccessResponse
+		var result client.ApplicationProcessSuccessResponse
 		if err := json.Unmarshal(respBody, &result); err != nil {
 			resp.Diagnostics.AddError("Error parsing response", err.Error())
 			return

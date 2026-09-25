@@ -2,12 +2,13 @@
 
 A Terraform provider for WSO2 Identity Server, generated from the API
 descriptions WSO2 publishes with the server itself. It exists to create root
-organizations (tenants), organizations under them, and applications within
-those.
+organizations (tenants), organizations under them, the applications within
+those, and the connections (external identity providers) those applications
+federate to.
 
 ```bash
 nix develop
-bin/generate        # three WSO2 documents in, this repo out
+bin/generate        # four WSO2 documents in, this repo out
 ```
 
 Everything under `internal/` is generated and **committed**: the Dockerfile
@@ -16,16 +17,16 @@ compiles what is in the tree, not what a regeneration would produce. Run
 
 ## Where it comes from
 
-Three documents WSO2 publishes with the server itself — tenant management,
-organization management, application management — merged into one and read in a
-single pass. **49 resources and 49 data sources**, one per collection or
-singleton path in those documents. Nothing is filtered: generating less than
+Four documents WSO2 publishes with the server itself — tenant management,
+organization management, application management, identity provider (connection)
+management — merged into one and read in a single pass. **73 resources and 73
+data sources**, one per collection or singleton path in those documents. Nothing is filtered: generating less than
 the document describes took extra code to arrange, and every path left out is a
 thing nobody can manage.
 
 ```bash
 nix develop
-bin/generate        # three WSO2 documents in, this repo out
+bin/generate        # four WSO2 documents in, this repo out
 ```
 
 Some you will want first:
@@ -37,6 +38,7 @@ Some you will want first:
 | `wso2_organization` | organizations under a tenant |
 | `wso2_application` | applications |
 | `wso2_application_inbound_protocol_oidc` | an application's OIDC configuration |
+| `wso2_identity_provider` | connections — a federated IdP, its authenticators and its JIT provisioning |
 
 A resource is named after its whole path, not its last segment.
 `/organizations/{organization-id}/applications/{application-id}/share` and
@@ -58,10 +60,10 @@ mkdir -p reference && cd reference
 git clone --depth 1 --filter=blob:none https://github.com/wso2/identity-api-server.git
 ```
 
-The three documents are separate APIs and openapi-generator reads one document
+The four documents are separate APIs and openapi-generator reads one document
 per run, so `bin/merge-specs` puts them together first. They disagree about
-what `Error`, `Link` and `Attribute` are, and two of them spell a share
-operation with the same `operationId` — which makes a merged document *invalid*,
+what `Error`, `Link`, `Attribute` and `Certificate` are, and more than one of
+them spells a share operation with the same `operationId` — which makes a merged document *invalid*,
 not merely ambiguous — so the merge renames per source rather than letting one
 definition quietly win.
 

@@ -111,7 +111,7 @@ func (r *ApplicationsShareWithAllResource) Create(ctx context.Context, req resou
 	}
 
 	if len(respBody) > 0 {
-		var result client.ProcessSuccessResponse
+		var result client.ApplicationProcessSuccessResponse
 		if err := json.Unmarshal(respBody, &result); err != nil {
 			resp.Diagnostics.AddError("Error parsing response", err.Error())
 			return

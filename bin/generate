@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The whole build: three WSO2 documents in, one deployable provider out.
+# The whole build: four WSO2 documents in, one deployable provider out.
 #
 # What lands in the repo is COMMITTED -- the Dockerfile compiles what is here,
 # not what a regeneration would produce. Run this, look at the diff, commit it.
@@ -11,8 +11,13 @@ SPECS=reference/identity-api-server/components
 TENANT=$SPECS/org.wso2.carbon.identity.api.server.tenant.management/org.wso2.carbon.identity.api.server.tenant.management.v1/src/main/resources/tenant-management.yaml
 ORG=$SPECS/org.wso2.carbon.identity.api.server.organization.management/org.wso2.carbon.identity.api.server.organization.management.v1/src/main/resources/org.wso2.carbon.identity.organization.management.yaml
 APP=$SPECS/org.wso2.carbon.identity.api.server.application.management/org.wso2.carbon.identity.api.server.application.management.v1/src/main/resources/applications.yaml
+# Connections: the external identity providers a tenant federates to, which is
+# what "sign in with Google" is. Its /identity-providers document carries the
+# federated authenticator configuration AND the just-in-time provisioning
+# block, so one document covers both halves of a federated login.
+IDP=$SPECS/org.wso2.carbon.identity.api.server.idp/org.wso2.carbon.identity.api.server.idp.v1/src/main/resources/idp.yaml
 
-for spec in "$TENANT" "$ORG" "$APP"; do
+for spec in "$TENANT" "$ORG" "$APP" "$IDP"; do
   test -f "$spec" || { echo "missing $spec -- see reference/ in the README"; exit 1; }
 done
 
@@ -22,7 +27,8 @@ trap 'rm -f "$MERGED"' EXIT
 bin/merge-specs "$MERGED" \
   tenant="$TENANT" \
   organization="$ORG" \
-  application="$APP"
+  application="$APP" \
+  idp="$IDP"
 
 # NO FILTER. The document describes the whole API and openapi-generator writes
 # whatever it is given; generating less than that took EXTRA code to arrange,

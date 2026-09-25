@@ -4,7 +4,7 @@ package client
 
 // RoleConfig - RoleConfig struct
 type RoleConfig struct {
-	Mappings []RoleMapping `json:"mappings,omitempty"`
+	Mappings []ApplicationRoleMapping `json:"mappings,omitempty"`
 	IncludeUserDomain *bool `json:"includeUserDomain,omitempty"`
 	Claim *Claim `json:"claim,omitempty"`
 }

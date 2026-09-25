@@ -2,8 +2,8 @@
 
 package client
 
-// SharingMode - SharingMode struct
-type SharingMode struct {
+// IdpOrgShareConfig - IdpOrgShareConfig struct
+type IdpOrgShareConfig struct {
+	OrgId string `json:"orgId,omitempty"`
 	Policy string `json:"policy,omitempty"`
-	RoleSharing *RoleSharing `json:"roleSharing,omitempty"`
 }

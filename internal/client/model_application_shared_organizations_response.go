@@ -5,6 +5,6 @@ package client
 // ApplicationSharedOrganizationsResponse - ApplicationSharedOrganizationsResponse struct
 type ApplicationSharedOrganizationsResponse struct {
 	Links []ApplicationLink `json:"links,omitempty"`
-	SharingMode *SharingMode `json:"sharingMode,omitempty"`
+	SharingMode *ApplicationSharingMode `json:"sharingMode,omitempty"`
 	Organizations []ApplicationBasicOrganizationResponse `json:"organizations,omitempty"`
 }

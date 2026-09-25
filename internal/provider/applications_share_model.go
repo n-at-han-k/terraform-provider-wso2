@@ -50,7 +50,7 @@ func (m *ApplicationsShareModel) ToUpdateModel() (*client.ApplicationSharingPatc
 }
 
 // FromClientModel updates the Terraform model from a client model.
-func (m *ApplicationsShareModel) FromClientModel(c *client.ProcessSuccessResponse) {
+func (m *ApplicationsShareModel) FromClientModel(c *client.ApplicationProcessSuccessResponse) {
 	m.Status = types.StringValue(c.Status)
 	m.Details = types.StringValue(c.Details)
 }

@@ -25,7 +25,7 @@ func (m *ApplicationsUnshareWithAllModel) ToClientModel() (*client.ApplicationUn
 
 
 // FromClientModel updates the Terraform model from a client model.
-func (m *ApplicationsUnshareWithAllModel) FromClientModel(c *client.ProcessSuccessResponse) {
+func (m *ApplicationsUnshareWithAllModel) FromClientModel(c *client.ApplicationProcessSuccessResponse) {
 	m.Status = types.StringValue(c.Status)
 	m.Details = types.StringValue(c.Details)
 }

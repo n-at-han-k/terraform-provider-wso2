@@ -2,8 +2,8 @@
 
 package client
 
-// RoleMapping - RoleMapping struct
-type RoleMapping struct {
+// IdpRoleMapping - IdpRoleMapping struct
+type IdpRoleMapping struct {
+	IdpRole string `json:"idpRole,omitempty"`
 	LocalRole string `json:"localRole,omitempty"`
-	ApplicationRole string `json:"applicationRole,omitempty"`
 }

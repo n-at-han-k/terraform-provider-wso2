@@ -42,7 +42,7 @@ func (m *ApplicationsShareWithAllModel) ToClientModel() (*client.ApplicationShar
 
 
 // FromClientModel updates the Terraform model from a client model.
-func (m *ApplicationsShareWithAllModel) FromClientModel(c *client.ProcessSuccessResponse) {
+func (m *ApplicationsShareWithAllModel) FromClientModel(c *client.ApplicationProcessSuccessResponse) {
 	m.Status = types.StringValue(c.Status)
 	m.Details = types.StringValue(c.Details)
 }

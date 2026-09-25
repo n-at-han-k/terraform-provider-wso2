@@ -2,8 +2,8 @@
 
 package client
 
-// Certificate - Certificate struct
-type Certificate struct {
-	Type string `json:"type,omitempty"`
+// Property - Property struct
+type Property struct {
+	Key string `json:"key,omitempty"`
 	Value string `json:"value,omitempty"`
 }

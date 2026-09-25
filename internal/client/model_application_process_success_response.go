@@ -2,8 +2,8 @@
 
 package client
 
-// ProcessSuccessResponse - ProcessSuccessResponse struct
-type ProcessSuccessResponse struct {
+// ApplicationProcessSuccessResponse - ApplicationProcessSuccessResponse struct
+type ApplicationProcessSuccessResponse struct {
 	Status string `json:"status,omitempty"`
 	Details string `json:"details,omitempty"`
 }

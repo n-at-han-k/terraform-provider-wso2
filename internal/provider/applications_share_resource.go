@@ -107,7 +107,7 @@ func (r *ApplicationsShareResource) Create(ctx context.Context, req resource.Cre
 	}
 
 	if len(respBody) > 0 {
-		var result client.ProcessSuccessResponse
+		var result client.ApplicationProcessSuccessResponse
 		if err := json.Unmarshal(respBody, &result); err != nil {
 			resp.Diagnostics.AddError("Error parsing response", err.Error())
 			return
@@ -154,7 +154,7 @@ func (r *ApplicationsShareResource) Update(ctx context.Context, req resource.Upd
 	}
 
 	if len(respBody) > 0 {
-		var result client.ProcessSuccessResponse
+		var result client.ApplicationProcessSuccessResponse
 		if err := json.Unmarshal(respBody, &result); err != nil {
 			resp.Diagnostics.AddError("Error parsing response", err.Error())
 			return
