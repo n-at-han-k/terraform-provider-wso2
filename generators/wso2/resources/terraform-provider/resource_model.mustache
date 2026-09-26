@@ -170,6 +170,20 @@ func (m *{{resourceClassName}}Model) FromClientModel(c *client.{{responseModel}}
 	}
 {{/isJson}}
 {{/readBack}}
+{{^readBack}}
+{{#inRequest}}
+{{#isComputed}}
+	// The create body takes this and no response of the same shape answers it --
+	// AssociationRequest against AssociationResponse -- so nothing above writes
+	// it, and a Computed attribute the configuration left out stays UNKNOWN once
+	// the apply is over: "provider returned invalid result object after apply".
+	// Unknown becomes null; a value the plan already knows is left alone.
+	if m.{{goName}}.IsUnknown() {
+		m.{{goName}} = {{#isString}}types.StringNull(){{/isString}}{{#isInt64}}types.Int64Null(){{/isInt64}}{{#isFloat64}}types.Float64Null(){{/isFloat64}}{{#isBool}}types.BoolNull(){{/isBool}}{{#isJson}}jsontypes.NewNormalizedNull(){{/isJson}}
+	}
+{{/isComputed}}
+{{/inRequest}}
+{{/readBack}}
 {{/tfAttributes}}
 }
 {{/responseModel}}

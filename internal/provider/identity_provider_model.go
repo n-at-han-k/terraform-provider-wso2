@@ -228,4 +228,28 @@ func (m *IdentityProviderModel) FromClientModel(c *client.IdentityProviderRespon
 			m.Groups = jsontypes.NewNormalizedValue(string(encoded))
 		}
 	}
+	// The create body takes this and no response of the same shape answers it --
+	// AssociationRequest against AssociationResponse -- so nothing above writes
+	// it, and a Computed attribute the configuration left out stays UNKNOWN once
+	// the apply is over: "provider returned invalid result object after apply".
+	// Unknown becomes null; a value the plan already knows is left alone.
+	if m.FederatedAuthenticators.IsUnknown() {
+		m.FederatedAuthenticators = jsontypes.NewNormalizedNull()
+	}
+	// The create body takes this and no response of the same shape answers it --
+	// AssociationRequest against AssociationResponse -- so nothing above writes
+	// it, and a Computed attribute the configuration left out stays UNKNOWN once
+	// the apply is over: "provider returned invalid result object after apply".
+	// Unknown becomes null; a value the plan already knows is left alone.
+	if m.Provisioning.IsUnknown() {
+		m.Provisioning = jsontypes.NewNormalizedNull()
+	}
+	// The create body takes this and no response of the same shape answers it --
+	// AssociationRequest against AssociationResponse -- so nothing above writes
+	// it, and a Computed attribute the configuration left out stays UNKNOWN once
+	// the apply is over: "provider returned invalid result object after apply".
+	// Unknown becomes null; a value the plan already knows is left alone.
+	if m.ImplicitAssociation.IsUnknown() {
+		m.ImplicitAssociation = jsontypes.NewNormalizedNull()
+	}
 }
